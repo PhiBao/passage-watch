@@ -1,0 +1,378 @@
+{
+  "36992": {
+    "symbol": "NVDAX",
+    "name": "NVIDIA tokenized stock (xStock)",
+    "contract_address": [
+      {
+        "contract_address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+        "platform": {
+          "name": "Solana",
+          "coin": {
+            "id": "5426",
+            "name": "Solana",
+            "symbol": "SOL",
+            "slug": "solana"
+          }
+        }
+      },
+      {
+        "contract_address": "0xc845b2894dbddd03858fd2d643b4ef725fe0849d",
+        "platform": {
+          "name": "BNB Smart Chain (BEP20)",
+          "coin": {
+            "id": "1839",
+            "name": "BNB",
+            "symbol": "BNB",
+            "slug": "bnb"
+          }
+        }
+      },
+      {
+        "contract_address": "0xc845b2894dbddd03858fd2d643b4ef725fe0849d",
+        "platform": {
+          "name": "Ethereum",
+          "coin": {
+            "id": "1027",
+            "name": "Ethereum",
+            "symbol": "ETH",
+            "slug": "ethereum"
+          }
+        }
+      },
+      {
+        "contract_address": "0xc845b2894dbddd03858fd2d643b4ef725fe0849d",
+        "platform": {
+          "name": "Ink",
+          "coin": {
+            "id": "36851",
+            "name": "INK",
+            "symbol": "INK",
+            "slug": "ink-token"
+          }
+        }
+      },
+      {
+        "contract_address": "EQCva-Of7acQdU_piADdlcbzsFtA-xJwZoctz8ZOXBdBoaB8",
+        "platform": {
+          "name": "TON",
+          "coin": {
+            "id": "11419",
+            "name": "Gram (prev. Toncoin)",
+            "symbol": "GRAM",
+            "slug": "gram"
+          }
+        }
+      },
+      {
+        "contract_address": "0xc845b2894dBddd03858fd2D643B4eF725fE0849d",
+        "platform": {
+          "name": "X Layer",
+          "coin": {
+            "id": "3897",
+            "name": "OKB",
+            "symbol": "OKB",
+            "slug": "okb"
+          }
+        }
+      }
+    ],
+    "platform": {
+      "id": "5426",
+      "name": "Solana",
+      "symbol": "SOL",
+      "slug": "solana",
+      "token_address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh"
+    }
+  },
+  "36994": {
+    "symbol": "AAPLX",
+    "name": "Apple tokenized stock (xStock)",
+    "contract_address": [
+      {
+        "contract_address": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
+        "platform": {
+          "name": "Solana",
+          "coin": {
+            "id": "5426",
+            "name": "Solana",
+            "symbol": "SOL",
+            "slug": "solana"
+          }
+        }
+      },
+      {
+        "contract_address": "0x9d275685dC284C8eB1C79f6ABA7a63Dc75ec890a",
+        "platform": {
+          "name": "X Layer",
+          "coin": {
+            "id": "3897",
+            "name": "OKB",
+            "symbol": "OKB",
+            "slug": "okb"
+          }
+        }
+      },
+      {
+        "contract_address": "0x9d275685dc284c8eb1c79f6aba7a63dc75ec890a",
+        "platform": {
+          "name": "Ethereum",
+          "coin": {
+            "id": "1027",
+            "name": "Ethereum",
+            "symbol": "ETH",
+            "slug": "ethereum"
+          }
+        }
+      },
+      {
+        "contract_address": "0x9d275685dc284c8eb1c79f6aba7a63dc75ec890a",
+        "platform": {
+          "name": "Ink",
+          "coin": {
+            "id": "36851",
+            "name": "INK",
+            "symbol": "INK",
+            "slug": "ink-token"
+          }
+        }
+      },
+      {
+        "contract_address": "0x9d275685dc284c8eb1c79f6aba7a63dc75ec890a",
+        "platform": {
+          "name": "Arbitrum",
+          "coin": {
+            "id": "11841",
+            "name": "Arbitrum",
+            "symbol": "ARB",
+            "slug": "arbitrum"
+          }
+        }
+      },
+      {
+        "contract_address": "EQDsjAwfKo-6FVZv2EYt-1CaZTY_ZL-pfkSId6jeQchNwmdo",
+        "platform": {
+          "name": "TON",
+          "coin": {
+            "id": "11419",
+            "name": "Gram (prev. Toncoin)",
+            "symbol": "GRAM",
+            "slug": "gram"
+          }
+        }
+      },
+      {
+        "contract_address": "0x9d275685dc284c8eb1c79f6aba7a63dc75ec890a",
+        "platform": {
+          "name": "BNB Smart Chain (BEP20)",
+          "coin": {
+            "id": "1839",
+            "name": "BNB",
+            "symbol": "BNB",
+            "slug": "bnb"
+          }
+        }
+      }
+    ],
+    "platform": {
+      "id": "5426",
+      "name": "Solana",
+      "symbol": "SOL",
+      "slug": "solana",
+      "token_address": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp"
+    }
+  },
+  "37004": {
+    "symbol": "TSLAX",
+    "name": "Tesla tokenized stock (xStock)",
+    "contract_address": [
+      {
+        "contract_address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+        "platform": {
+          "name": "Solana",
+          "coin": {
+            "id": "5426",
+            "name": "Solana",
+            "symbol": "SOL",
+            "slug": "solana"
+          }
+        }
+      },
+      {
+        "contract_address": "0x8ad3c73f833d3f9a523ab01476625f269aeb7cf0",
+        "platform": {
+          "name": "Arbitrum",
+          "coin": {
+            "id": "11841",
+            "name": "Arbitrum",
+            "symbol": "ARB",
+            "slug": "arbitrum"
+          }
+        }
+      },
+      {
+        "contract_address": "0x8ad3c73f833d3f9a523ab01476625f269aeb7cf0",
+        "platform": {
+          "name": "BNB Smart Chain (BEP20)",
+          "coin": {
+            "id": "1839",
+            "name": "BNB",
+            "symbol": "BNB",
+            "slug": "bnb"
+          }
+        }
+      },
+      {
+        "contract_address": "0x8ad3c73f833d3f9a523ab01476625f269aeb7cf0",
+        "platform": {
+          "name": "Ethereum",
+          "coin": {
+            "id": "1027",
+            "name": "Ethereum",
+            "symbol": "ETH",
+            "slug": "ethereum"
+          }
+        }
+      },
+      {
+        "contract_address": "0x8ad3c73f833d3f9a523ab01476625f269aeb7cf0",
+        "platform": {
+          "name": "Ink",
+          "coin": {
+            "id": "36851",
+            "name": "INK",
+            "symbol": "INK",
+            "slug": "ink-token"
+          }
+        }
+      },
+      {
+        "contract_address": "EQB4IwqWZPUczntdry8vSN2tsJKt-9F7iIb7gEFREYYOB563",
+        "platform": {
+          "name": "TON",
+          "coin": {
+            "id": "11419",
+            "name": "Gram (prev. Toncoin)",
+            "symbol": "GRAM",
+            "slug": "gram"
+          }
+        }
+      },
+      {
+        "contract_address": "0x8aD3c73F833d3F9A523aB01476625F269aEB7Cf0",
+        "platform": {
+          "name": "X Layer",
+          "coin": {
+            "id": "3897",
+            "name": "OKB",
+            "symbol": "OKB",
+            "slug": "okb"
+          }
+        }
+      }
+    ],
+    "platform": {
+      "id": "5426",
+      "name": "Solana",
+      "symbol": "SOL",
+      "slug": "solana",
+      "token_address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB"
+    }
+  },
+  "37006": {
+    "symbol": "SPYX",
+    "name": "SP500 tokenized ETF (xStock)",
+    "contract_address": [
+      {
+        "contract_address": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+        "platform": {
+          "name": "Solana",
+          "coin": {
+            "id": "5426",
+            "name": "Solana",
+            "symbol": "SOL",
+            "slug": "solana"
+          }
+        }
+      },
+      {
+        "contract_address": "0x90a2a4c76b5d8c0bc892a69ea28aa775a8f2dd48",
+        "platform": {
+          "name": "Arbitrum",
+          "coin": {
+            "id": "11841",
+            "name": "Arbitrum",
+            "symbol": "ARB",
+            "slug": "arbitrum"
+          }
+        }
+      },
+      {
+        "contract_address": "0x90a2a4c76b5d8c0bc892a69ea28aa775a8f2dd48",
+        "platform": {
+          "name": "BNB Smart Chain (BEP20)",
+          "coin": {
+            "id": "1839",
+            "name": "BNB",
+            "symbol": "BNB",
+            "slug": "bnb"
+          }
+        }
+      },
+      {
+        "contract_address": "EQB1fyBAA9qQDP6LEGaF3cbU-Xbr-p6ESBZGnqlHkHIHAJZv",
+        "platform": {
+          "name": "TON",
+          "coin": {
+            "id": "11419",
+            "name": "Gram (prev. Toncoin)",
+            "symbol": "GRAM",
+            "slug": "gram"
+          }
+        }
+      },
+      {
+        "contract_address": "0x90a2a4c76b5d8c0bc892a69ea28aa775a8f2dd48",
+        "platform": {
+          "name": "Ethereum",
+          "coin": {
+            "id": "1027",
+            "name": "Ethereum",
+            "symbol": "ETH",
+            "slug": "ethereum"
+          }
+        }
+      },
+      {
+        "contract_address": "0x90a2a4c76b5d8c0bc892a69ea28aa775a8f2dd48",
+        "platform": {
+          "name": "Ink",
+          "coin": {
+            "id": "36851",
+            "name": "INK",
+            "symbol": "INK",
+            "slug": "ink-token"
+          }
+        }
+      },
+      {
+        "contract_address": "0x90A2a4c76b5D8c0bc892A69EA28Aa775a8f2dD48",
+        "platform": {
+          "name": "X Layer",
+          "coin": {
+            "id": "3897",
+            "name": "OKB",
+            "symbol": "OKB",
+            "slug": "okb"
+          }
+        }
+      }
+    ],
+    "platform": {
+      "id": "5426",
+      "name": "Solana",
+      "symbol": "SOL",
+      "slug": "solana",
+      "token_address": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W"
+    }
+  }
+}

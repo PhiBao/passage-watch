@@ -7,22 +7,29 @@ Scaffold and first vertical slice.
 ## Done
 
 - Product direction fixed: Passage Watch.
-- Repository safety boundaries added.
-- CMC key stored only in `.env`, which is ignored by Git.
+- Repository safety boundaries added; `.env` ignored by Git.
+- **CMC key verified live**: the `.env` key is a valid Startup plan (450,000 credits/month, 600 req/min, HTTP 200 on `/v1/key/info`).
+  - An earlier "plan expired" result came from a stale shell variable with a different key; `.env` is the source of truth.
+  - Backend must load `.env` with `dotenvy::dotenv_override()` so the stale shell var cannot win.
+- **Real RWA data verified**: underlying stock symbols resolve to `rwa_id`, and `quotes/latest` returns the token → issuer → `crypto_id` graph with prices.
+  - AAPLX (`rwa_id` 3 / `crypto_id` 36994), NVDAX (2 / 36992), TSLAX (14 / 37004), SPYX (86 / 37006), all Backed Assets.
+  - Real response sample saved under `docs/evidence/`.
+- **Solana contract addresses** captured from `/v2/cryptocurrency/info`.
+- **Secondary quote verified keyless**: Jupiter Swap V2 `/order` returns a read-only quote (no `taker`) with no API key. This removes an access dependency.
 
 ## Next
 
-- Verify the campaign key's real entitlements and selected token coverage.
-- Build the Rust API shell and React shell.
-- Implement exact CMC identity resolution and a real-call evidence path.
-- Implement route rules and destination comparison.
-- Implement local plan storage and change detection.
+- Finish backend route engine, evidence schema and key loading.
+- Finish frontend plan monitor, change view and failure states.
+- Wire the real instrument catalog into the API.
+- Add effective-time scaled-UI multiplier handling.
+- Quota-aware fetch scheduling and evidence receipts.
 
 ## Known risks
 
-- Actual event-key endpoint entitlement is unverified.
-- RWA and crypto market-pairs endpoints are Growth-gated in current references; Passage must run on Basic after the event.
-- Secondary quote provider coverage and display terms are unverified.
+- RWA and crypto market-pairs endpoints are Growth-gated; Passage runs on Basic after the event and does not depend on them.
+- Jupiter display terms and rate limits for a public demo still need confirmation; the keyless quote is unauthenticated and shared-rate-limited.
+- Solana RPC for mint/multiplier reading needs a provider; public endpoint may rate-limit.
 - Token unit semantics require effective-time multiplier handling.
 - Issuer route evidence can become stale.
 - The product remains adjacent to strong prior projects; monitoring and destination semantics must remain central.

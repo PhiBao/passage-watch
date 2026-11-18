@@ -1,0 +1,315 @@
+{
+  "status": {
+    "timestamp": "2026-11-18T08:49:34.410Z",
+    "error_code": "0",
+    "error_message": "",
+    "elapsed": 13,
+    "credit_count": 1
+  },
+  "assets": [
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPLX",
+      "issuer": "Backed Assets",
+      "crypto_id": 36994,
+      "price": 350.92478891851886
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPL.D",
+      "issuer": "Dinari Assets",
+      "crypto_id": 28624,
+      "price": null
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPLon",
+      "issuer": "Ondo Assets",
+      "crypto_id": 38037,
+      "price": 350.65908621749276
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPL",
+      "issuer": "NA (Derivatives)",
+      "crypto_id": 39491,
+      "price": 350.431596122544
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPL",
+      "issuer": "Hyperliquid Assets",
+      "crypto_id": 39624,
+      "price": 355.70312619813996
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "rAAPL",
+      "issuer": "Reality",
+      "crypto_id": 40598,
+      "price": 350.0212185001957
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPL",
+      "issuer": "Robinhood",
+      "crypto_id": 40703,
+      "price": 350.2374420168528
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPLB",
+      "issuer": "bStocks",
+      "crypto_id": 40927,
+      "price": 350.08784470741625
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "WAAPLX",
+      "issuer": "Backed Assets",
+      "crypto_id": 37269,
+      "price": 351.6437584843399
+    },
+    {
+      "underlying": "AAPL",
+      "rwa_id": 3,
+      "token": "AAPLc",
+      "issuer": "Coinbase",
+      "crypto_id": 42427,
+      "price": 349.73268001535877
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDAX",
+      "issuer": "Backed Assets",
+      "crypto_id": 36992,
+      "price": 160.14510981642468
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDA.D",
+      "issuer": "Dinari Assets",
+      "crypto_id": 28616,
+      "price": null
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDAon",
+      "issuer": "Ondo Assets",
+      "crypto_id": 38093,
+      "price": 159.92691705108646
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDA",
+      "issuer": "NA (Derivatives)",
+      "crypto_id": 38153,
+      "price": 160.05907213781063
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDAB",
+      "issuer": "bStocks",
+      "crypto_id": 40215,
+      "price": 159.87796791900172
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "rNVDA",
+      "issuer": "Reality",
+      "crypto_id": 40605,
+      "price": 160.0020274057385
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDA",
+      "issuer": "Robinhood",
+      "crypto_id": 40685,
+      "price": 159.91467734518324
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "WNVDAX",
+      "issuer": "Backed Assets",
+      "crypto_id": 37270,
+      "price": 160.18089948957083
+    },
+    {
+      "underlying": "NVDA",
+      "rwa_id": 2,
+      "token": "NVDAc",
+      "issuer": "Coinbase",
+      "crypto_id": 42461,
+      "price": 159.8275085731573
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLAX",
+      "issuer": "Backed Assets",
+      "crypto_id": 37004,
+      "price": 384.03805368914755
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLA.D",
+      "issuer": "Dinari Assets",
+      "crypto_id": 28626,
+      "price": null
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLAon",
+      "issuer": "Ondo Assets",
+      "crypto_id": 38029,
+      "price": 383.8171671209959
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLA",
+      "issuer": "NA (Derivatives)",
+      "crypto_id": 38152,
+      "price": 384.3414102808688
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLA",
+      "issuer": "Hyperliquid Assets",
+      "crypto_id": 39618,
+      "price": 201.9593474667481
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLAB",
+      "issuer": "bStocks",
+      "crypto_id": 40214,
+      "price": 384.1015082268197
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "rTSLA",
+      "issuer": "Reality",
+      "crypto_id": 40624,
+      "price": 383.5533679813677
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLA",
+      "issuer": "Robinhood",
+      "crypto_id": 40691,
+      "price": 384.0027763062487
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "WTSLAX",
+      "issuer": "Backed Assets",
+      "crypto_id": 37227,
+      "price": 383.2733138925073
+    },
+    {
+      "underlying": "TSLA",
+      "rwa_id": 14,
+      "token": "TSLAc",
+      "issuer": "Coinbase",
+      "crypto_id": 42490,
+      "price": 383.37430027705284
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPYX",
+      "issuer": "Backed Assets",
+      "crypto_id": 37006,
+      "price": 739.1241141491272
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPY.D",
+      "issuer": "Dinari Assets",
+      "crypto_id": 28628,
+      "price": null
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPYon",
+      "issuer": "Ondo Assets",
+      "crypto_id": 38067,
+      "price": 739.6341298076352
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPY",
+      "issuer": "Hyperliquid Assets",
+      "crypto_id": 39621,
+      "price": 756.0758149548767
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPY",
+      "issuer": "NA (Derivatives)",
+      "crypto_id": 39732,
+      "price": 736.8706434846714
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "rSPY",
+      "issuer": "Reality",
+      "crypto_id": 40625,
+      "price": 735.6916793894397
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPY",
+      "issuer": "Robinhood",
+      "crypto_id": 40694,
+      "price": 736.3721352868546
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "SPYB",
+      "issuer": "bStocks",
+      "crypto_id": 40790,
+      "price": 735.748738661191
+    },
+    {
+      "underlying": "SPY",
+      "rwa_id": 86,
+      "token": "wSPYx",
+      "issuer": "Backed Assets",
+      "crypto_id": 41525,
+      "price": 741.4121659892379
+    }
+  ]
+}

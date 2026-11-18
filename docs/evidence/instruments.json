@@ -1,0 +1,50 @@
+{
+  "_source": "CoinMarketCap RWA API, retrieved 2026-11-18 with participant .env key; response samples in this directory",
+  "_note": "Underlying symbols resolve via /v5/real-world-assets/map; token rows via /v5/real-world-assets/quotes/latest; contracts via /v2/cryptocurrency/info",
+  "instruments": [
+    {
+      "underlying": "AAPL",
+      "underlying_name": "Apple Inc.",
+      "rwa_id": 3,
+      "token_symbol": "AAPLX",
+      "crypto_id": 36994,
+      "issuer": "Backed Assets",
+      "network": "Solana",
+      "contract": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
+      "observed_price_usd": 350.92478891851886
+    },
+    {
+      "underlying": "NVDA",
+      "underlying_name": "Nvidia Corp",
+      "rwa_id": 2,
+      "token_symbol": "NVDAX",
+      "crypto_id": 36992,
+      "issuer": "Backed Assets",
+      "network": "Solana",
+      "contract": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+      "observed_price_usd": 160.14510981642468
+    },
+    {
+      "underlying": "TSLA",
+      "underlying_name": "Tesla, Inc.",
+      "rwa_id": 14,
+      "token_symbol": "TSLAX",
+      "crypto_id": 37004,
+      "issuer": "Backed Assets",
+      "network": "Solana",
+      "contract": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+      "observed_price_usd": 384.03805368914755
+    },
+    {
+      "underlying": "SPY",
+      "underlying_name": "SPDR S&P 500 ETF Trust",
+      "rwa_id": 86,
+      "token_symbol": "SPYX",
+      "crypto_id": 37006,
+      "issuer": "Backed Assets",
+      "network": "Solana",
+      "contract": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+      "observed_price_usd": 739.1241141491272
+    }
+  ]
+}
