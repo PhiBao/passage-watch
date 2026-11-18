@@ -1,0 +1,16 @@
+.env
+.env.local
+*.pem
+*.key
+
+node_modules/
+dist/
+build/
+target/
+coverage/
+
+.DS_Store
+*.log
+.vite/
+.vercel/
+.netlify/
