@@ -14,3 +14,6 @@ coverage/
 .vite/
 .vercel/
 .netlify/
+dist/
+node_modules/
+target/

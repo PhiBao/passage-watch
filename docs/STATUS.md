@@ -2,9 +2,19 @@
 
 ## Current phase
 
-Scaffold and first vertical slice.
+Vertical slice complete and running end-to-end against live APIs. Ready for demo polish and submission rehearsal.
 
 ## Done
+
+- Rust backend (Axum) + React frontend (Vite) both build; 14 Rust tests pass.
+- Live CMC catalog, check, instrument, method and status endpoints.
+- Live Solana parsed-mint multiplier resolution; unit_basis verified end-to-end.
+- Live keyless Jupiter read-only quote, normalized to share-equivalents.
+- Deterministic route engine: destination-specific, explicit unknowns, no global verdict.
+- Versioned evidence registry with freshness and conflict states.
+- Frontend: plan form, destination switch, route cards, evidence panel, localStorage plan + change view.
+- Real-call evidence captured under `docs/evidence/`; reproduction script added.
+- Submission-quality README, architecture/design/submission docs and route diagram added.
 
 - Product direction fixed: Passage Watch.
 - Repository safety boundaries added; `.env` ignored by Git.
