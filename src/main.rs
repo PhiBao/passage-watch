@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use passage_watch::cmc::{CmcClient, ENDPOINTS};
-use passage_watch::config::{self, Config};
+use passage_watch::config;
 use passage_watch::date::SimpleDate;
 use passage_watch::engine::{self, rule_version};
 use passage_watch::model::{Destination, Instrument, MarketSession, Onboarding, PlanContext};
@@ -47,6 +47,7 @@ async fn main() {
         .route("/api/v1/instruments/:id", get(instrument))
         .route("/api/v1/check", get(check))
         .route("/api/v1/method", get(method))
+        .route("/api/v1/observations/:id", get(observations))
         .with_state(state);
 
     let addr = format!("0.0.0.0:{port}");
@@ -124,7 +125,7 @@ async fn check(
             Json(json!({ "error": e.to_string() })),
         )
     })?;
-    let mut instrument = catalog
+    let instrument = catalog
         .iter_mut()
         .find(|i| i.crypto_id == q.crypto_id)
         .ok_or((
@@ -196,6 +197,32 @@ async fn check(
         "checked_at": now.iso,
         "rule_version": rule_version(),
     })))
+}
+
+async fn observations(
+    State(s): State<AppState>,
+    Path(id): Path<u64>,
+) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
+    let quotes = s.cmc.historical_prices(id).await.map_err(|e| {
+        (
+            StatusCode::BAD_GATEWAY,
+            Json(json!({ "error": e.to_string() })),
+        )
+    })?;
+    let points: Vec<Value> = quotes
+        .iter()
+        .map(|q| {
+            let ts = q.get("timestamp").cloned().unwrap_or(Value::Null);
+            let price = q
+                .get("quote")
+                .and_then(|x| x.get("USD"))
+                .and_then(|x| x.get("price"))
+                .cloned()
+                .unwrap_or(Value::Null);
+            json!({ "timestamp": ts, "price_usd": price })
+        })
+        .collect();
+    Ok(Json(json!({ "crypto_id": id, "points": points })))
 }
 
 async fn method() -> Json<Value> {

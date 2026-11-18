@@ -5,7 +5,6 @@
 use std::time::Duration;
 
 use reqwest::Client;
-use serde::Deserialize;
 use serde_json::{json, Value};
 
 use crate::unit::ScaledUiConfig;

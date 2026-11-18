@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use reqwest::Client;
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 use crate::config::Config;
 use crate::model::{Instrument, UnitBasis};

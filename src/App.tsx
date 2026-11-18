@@ -3,7 +3,8 @@ import Header from './components/Header'
 import PlanForm from './components/PlanForm'
 import RouteCard from './components/RouteCard'
 import EvidencePanel from './components/EvidencePanel'
-import { fetchCatalog, fetchMethod, runCheck } from './api'
+import { fetchCatalog, fetchMethod, fetchObservations, runCheck } from './api'
+import type { ObservationPoint } from './api'
 import type {
   CheckResult,
   Destination,
@@ -37,6 +38,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [savedPlan, setSavedPlan] = useState<PlanRecord | null>(loadSaved)
+  const [observations, setObservations] = useState<ObservationPoint[]>([])
 
   useEffect(() => {
     fetchCatalog()
@@ -66,8 +68,9 @@ export default function App() {
     setLoading(true)
     setError(null)
     try {
-      const res = await runCheck(input)
+      const [res, obs] = await Promise.all([runCheck(input), fetchObservations(input.crypto_id)])
       setResult(res)
+      setObservations(obs.points.filter((p) => p.price_usd != null))
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -163,6 +166,31 @@ export default function App() {
                   {result.quote.expires_at && ` · expires ${new Date(result.quote.expires_at).toLocaleTimeString()}`}
                   . Estimate only — never a guaranteed fill.
                 </p>
+              </div>
+            )}
+
+            {observations.length > 1 && (
+              <div className="observation-strip">
+                <div className="observation-head">
+                  <span className="quote-label">Recorded observations · last {observations.length} days</span>
+                  <span className="observation-change">
+                    {(() => {
+                      const first = observations[0].price_usd
+                      const last = observations[observations.length - 1].price_usd
+                      const bps = ((last / first) - 1) * 10000
+                      return `${bps >= 0 ? '+' : ''}${bps.toFixed(0)} bps over the window`
+                    })()}
+                  </span>
+                </div>
+                <div className="observation-bars" aria-hidden="true">
+                  {observations.map((p, i) => {
+                    const min = Math.min(...observations.map((o) => o.price_usd))
+                    const max = Math.max(...observations.map((o) => o.price_usd))
+                    const h = 12 + ((p.price_usd - min) / (max - min || 1)) * 30
+                    return <span key={i} className="obs-bar" style={{ height: `${h}px` }} title={`${p.timestamp.slice(0, 10)} · $${p.price_usd.toFixed(2)}`} />
+                  })}
+                </div>
+                <p className="field-hint">Real daily CMC quotes. This is the evidence behind “change since saved”.</p>
               </div>
             )}
 

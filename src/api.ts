@@ -45,3 +45,12 @@ export function runCheck(input: PlanInput): Promise<CheckResult> {
 export function fetchMethod(): Promise<{ endpoints: string[]; rule_version: string }> {
   return getJson('/api/v1/method')
 }
+
+export interface ObservationPoint {
+  timestamp: string
+  price_usd: number
+}
+
+export function fetchObservations(cryptoId: number): Promise<{ points: ObservationPoint[] }> {
+  return getJson(`/api/v1/observations/${cryptoId}`)
+}
