@@ -1,0 +1,31 @@
+{
+  "_source": "Public Solana mainnet RPC getAccountInfo, base64 mint accounts, retrieved 2026-11-18",
+  "_warning": "Naive TLV parsing produced an invalid effective timestamp. DO NOT use these raw values for user-facing quantities. Use the official spl-token-2022 decoder and select the active multiplier by new_multiplier_effective_timestamp vs cluster Clock.",
+  "_finding": "These Token-2022 mints carry ScaledUiAmountConfig with two candidate f64 multipliers, confirming the effective-time selection trap documented by Solana. Exact active multiplier is UNVERIFIED until decoded with the official library.",
+  "mints": {
+    "AAPLX": {
+      "mint": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
+      "candidate_multipliers": [1.003269013, 1.003802303],
+      "active_multiplier": null,
+      "status": "pending_official_decode"
+    },
+    "NVDAX": {
+      "mint": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+      "candidate_multipliers": [1.000918076, 1.001701197],
+      "active_multiplier": null,
+      "status": "pending_official_decode"
+    },
+    "TSLAX": {
+      "mint": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+      "candidate_multipliers": [],
+      "active_multiplier": null,
+      "status": "no_multiplier_found_in_naive_scan_verify_with_sdk"
+    },
+    "SPYX": {
+      "mint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+      "candidate_multipliers": [1.005732156, 1.007474127],
+      "active_multiplier": null,
+      "status": "pending_official_decode"
+    }
+  }
+}
