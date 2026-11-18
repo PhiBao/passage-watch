@@ -27,13 +27,15 @@ Vertical slice complete and running end-to-end against live APIs. Ready for demo
 - **Solana contract addresses** captured from `/v2/cryptocurrency/info`.
 - **Secondary quote verified keyless**: Jupiter Swap V2 `/order` returns a read-only quote (no `taker`) with no API key. This removes an access dependency.
 
-## Next
+- Observation history panel from real CMC daily quotes (10 points), powering the "change since saved" demo.
+- Zero compiler warnings; clean git tree.
 
-- Finish backend route engine, evidence schema and key loading.
-- Finish frontend plan monitor, change view and failure states.
-- Wire the real instrument catalog into the API.
-- Add effective-time scaled-UI multiplier handling.
-- Quota-aware fetch scheduling and evidence receipts.
+## Next (remaining for submission)
+
+- Record the 3-minute demo video from the running app.
+- Confirm Jupiter keyless display terms and rate limits; add a documented fallback state.
+- Add a short quota/caching guard for repeated demo runs.
+- Final submission rehearsal: public repo, DoraHacks build, X post with `#BuildwithCMC`.
 
 ## Known risks
 
