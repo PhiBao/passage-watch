@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# The key must come from the .env file. The shell may carry a stale CMC_API_KEY;
-# dotenvy_override() makes the file authoritative, so strip the shell var first.
-unset CMC_API_KEY || true
+
+# In containers the key arrives as an environment variable (Fly secret), and
+# there is no .env file. Locally, `dotenvy::dotenv_override()` makes a .env file
+# authoritative when one exists. So do NOT strip the environment here.
+if [ -f /app/.env ]; then
+  echo "using .env for local configuration"
+else
+  echo "using environment for configuration (no .env present)"
+fi
 
 exec passage-watch
