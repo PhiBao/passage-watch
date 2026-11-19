@@ -13,12 +13,25 @@ It does **not** trade, sign, redeem, determine legal eligibility, or claim guara
 ## Check it in 60 seconds
 
 1. Open the demo and choose **AAPLX — Apple Inc. (Solana)**.
-2. Enter `75` units and keep the **USDC in my Solana wallet** destination.
-3. Select **Check routes**. You will see a live secondary quote and three issuer routes, each with its own prerequisites and unknowns.
+2. Enter `75` units, set a deadline a couple of days out, and keep the **USDC in my Solana wallet** destination.
+3. Select **Check routes**. You get a live sell quote, a **liquidity-at-size** table (25/50/100% of the holding), the route table, and an **exit window** with the next NYSE session and how many sessions remain before your deadline.
 4. Switch the destination to **Shares in my brokerage**. xPort changes from *different destination* to a route that requires **both** issuer and Alpaca onboarding.
-5. Select **Watch this plan**, re-run a check after prices move, and read **Change since saved**.
+5. Select **Watch this plan**, re-run a check after prices move, and read **Change since saved** plus the price sparkline.
 
-Everything is real: the identity graph, prices, the Solana multiplier and the secondary quote come from live APIs at request time.
+Everything is real: the identity graph, prices, the Solana multiplier, the sell quote and the daily observation sparkline come from live APIs at request time.
+
+### Feature map
+
+| Area | What it does |
+|---|---|
+| Identity | CMC resolves the underlying → wrapper token → issuer; Solana contract verified |
+| Sell quote | Live read-only Jupiter quote, token → USDC, at your exact size |
+| Liquidity at size | The same quote at 25/50/100% of the holding |
+| Units | Token-2022 Scaled UI Amount, effective-time multiplier (not the naive field) |
+| Routes | Secondary sale / Market Flow / xChange / xPort with prerequisites, unknowns, sources, availability |
+| Exit window | Market open/closed now, next session, sessions remaining before your deadline |
+| Monitoring | Background snapshot worker + "change since saved" |
+| Address import | Paste a Solana address (read-only) to pull supported holdings |
 
 ---
 
