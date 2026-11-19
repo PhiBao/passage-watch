@@ -8,9 +8,31 @@ import type {
 /**
  * The browser only ever talks to the same-origin product API.
  * The CMC key and quote-provider credentials stay server-side.
+ *
+ * A scale-to-zero host can drop the very first request while the machine
+ * wakes, so a transport failure or a 502/503/504 gets two short retries.
  */
-async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(path, { headers: { Accept: 'application/json' } })
+const RETRY_STATUS = new Set([502, 503, 504])
+
+async function getJson<T>(path: string, attempt = 0): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(path, { headers: { Accept: 'application/json' } })
+  } catch (e) {
+    if (attempt < 3) {
+      await new Promise((r) => setTimeout(r, 1000 + attempt * 800))
+      return getJson<T>(path, attempt + 1)
+    }
+    throw new Error(
+      e instanceof TypeError ? 'Service was waking up. Please retry.' : String(e),
+    )
+  }
+
+  if (RETRY_STATUS.has(res.status) && attempt < 3) {
+    await new Promise((r) => setTimeout(r, 1000 + attempt * 800))
+    return getJson<T>(path, attempt + 1)
+  }
+
   if (!res.ok) {
     let message = `Request failed (${res.status})`
     try {
