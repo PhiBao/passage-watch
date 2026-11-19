@@ -3,8 +3,10 @@ import Header from './components/Header'
 import PlanForm from './components/PlanForm'
 import RouteCard from './components/RouteCard'
 import TimelinePanel from './components/TimelinePanel'
+import Sparkline from './components/Sparkline'
 import EvidencePanel from './components/EvidencePanel'
 import { fetchAddressHoldings, fetchCatalog, fetchChanges, fetchMethod, fetchObservations, fetchTimeline, runCheck } from './api'
+import type { Holding } from './api'
 import { isUsdstHolidayDate, marketSessionFromCheck } from './session'
 import type { ObservationPoint, Timeline, ChangeEntry } from './api'
 import { verdict as computeVerdict } from './verdict'
@@ -47,6 +49,7 @@ export default function App() {
   const [changes, setChanges] = useState<ChangeEntry[]>([])
   const [addressInput, setAddressInput] = useState('')
   const [importStatus, setImportStatus] = useState('')
+  const [holdings, setHoldings] = useState<Holding[]>([])
   const selectedInstrument = instruments.find((i) => i.crypto_id === selectedId)
 
   useEffect(() => {
@@ -126,20 +129,35 @@ export default function App() {
     const addr = addressInput.trim()
     if (!addr) return
     setImportStatus('Scanning address…')
+    setHoldings([])
     try {
       const res = await fetchAddressHoldings(addr)
-      const h = res.instruments[0]
-      const inst = instruments.find((i) => i.token_symbol === h.token_symbol)
-      if (h && inst) {
-        setSelectedId(inst.crypto_id)
-        setQuantity(String(h.balance))
-        setImportStatus(`✓ Imported ${h.token_symbol} (${h.balance} units).`)
-      } else {
+      const found = res.instruments
+      if (found.length === 0) {
         setImportStatus('No supported tokenized-stock holdings found in this address.')
+        return
+      }
+      setHoldings(found)
+      const first = found[0]
+      const inst = instruments.find((i) => i.token_symbol === first.token_symbol)
+      if (inst) {
+        setSelectedId(inst.crypto_id)
+        setQuantity(String(first.balance))
+        setImportStatus(`✓ ${found.length} supported holding${found.length > 1 ? 's' : ''} found — selected ${first.token_symbol}.`)
+      } else {
+        setImportStatus(`${found.length} holding${found.length > 1 ? 's' : ''} found.`)
       }
     } catch (e) {
       setImportStatus((e as Error).message)
     }
+  }
+
+  function chooseHolding(tokenSymbol: string, balance: number) {
+    const inst = instruments.find((i) => i.token_symbol === tokenSymbol)
+    if (!inst) return
+    setSelectedId(inst.crypto_id)
+    setQuantity(String(balance))
+    setImportStatus(`✓ Selected ${tokenSymbol} (${balance} units).`)
   }
 
   return (
@@ -173,6 +191,19 @@ export default function App() {
               <button className="secondary-action" onClick={onImportAddress}>Scan holdings</button>
             </div>
             {importStatus && <span className={`import-status ${/✓|No supported|prefer/.test(importStatus) ? 'ok' : 'warn'}`}>{importStatus}</span>}
+            {holdings.length > 0 && (
+              <ul className="holdings-list">
+                {holdings.map((h) => (
+                  <li key={h.contract}>
+                    <button className="holding-chip" onClick={() => chooseHolding(h.token_symbol, h.balance)}>
+                      <strong>{h.token_symbol}</strong>
+                      <span>{h.balance.toLocaleString(undefined, { maximumFractionDigits: 4 })} units</span>
+                      <span className="muted">{h.issuer}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <PlanForm
             instruments={instruments}
@@ -278,14 +309,7 @@ export default function App() {
                     })()}
                   </span>
                 </div>
-                <div className="observation-bars" aria-hidden="true">
-                  {observations.map((p, i) => {
-                    const min = Math.min(...observations.map((o) => o.price_usd))
-                    const max = Math.max(...observations.map((o) => o.price_usd))
-                    const h = 12 + ((p.price_usd - min) / (max - min || 1)) * 30
-                    return <span key={i} className="obs-bar" style={{ height: `${h}px` }} title={`${p.timestamp.slice(0, 10)} · $${p.price_usd.toFixed(2)}`} />
-                  })}
-                </div>
+                <Sparkline points={observations} />
                 <p className="field-hint">Real daily CMC quotes. This is the evidence behind “change since saved”.</p>
               </div>
             )}
