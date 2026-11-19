@@ -8,6 +8,8 @@ It does **not** trade, sign, redeem, determine legal eligibility, or claim guara
 
 **Track:** Real World Assets · **Hackathon:** Build with CMC, Round 2 (Nov 2026)
 
+**Live demo:** <https://passage-watch.fly.dev/> — scale-to-zero, so the first load can take a few seconds while the machine wakes.
+
 ---
 
 ## Check it in 60 seconds
