@@ -30,11 +30,18 @@ Vertical slice complete and running end-to-end against live APIs. Ready for demo
 - Observation history panel from real CMC daily quotes (10 points), powering the "change since saved" demo.
 - Quote normalization uses the parsed mint's real `decimals` (not hardcoded 8) via a round-trip-tested pair of converters in `src/unit.rs`. 15/15 tests pass.
 
+## Verified end-to-end
+
+- `GET /` serves the built frontend from `dist/`; favicon and all assets load.
+- `GET /api/v1/check` (AAPLX, USDC goal) → unit verified, quote `74.14 share-equivalents`, xPort `different_destination`.
+- `GET /api/v1/check` (AAPLX, brokerage goal) → xPort `requires_preparation`.
+- `GET /api/v1/observations/36994` → 10 real daily points.
+- `cargo test` 15/15, `pnpm build` clean.
+
 ## Next (remaining for submission)
 
-- Record the 3-minute demo video from the running app.
+- Record the 3-minute demo video from the running app (port 3317 locally, or the deployed URL).
 - Confirm Jupiter keyless display terms and rate limits; add a documented fallback state.
-- Add a short quota/caching guard for repeated demo runs.
 - Final submission rehearsal: public repo, DoraHacks build, X post with `#BuildwithCMC`.
 
 ## Known risks
