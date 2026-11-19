@@ -35,7 +35,10 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [quantity, setQuantity] = useState('75')
   const [destination, setDestination] = useState<Destination>('USDC_SOLANA')
-  const [deadline, setDeadline] = useState('')
+  const [deadline, setDeadline] = useState(() => {
+    const d = new Date(Date.now() + 3 * 86400000)
+    return d.toISOString().slice(0, 10)
+  })
   const [issuerOnboarding, setIssuerOnboarding] = useState<Onboarding>('unknown')
   const [brokerOnboarding, setBrokerOnboarding] = useState<Onboarding>('unknown')
   const [result, setResult] = useState<CheckResult | null>(null)
