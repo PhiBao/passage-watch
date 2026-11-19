@@ -37,15 +37,17 @@ export interface RouteResult {
   source_urls: string[]
 }
 
-export interface QuoteObservation {
-  provider: string
-  input_amount_usd: number
-  output_amount: number | null
+export interface SellQuote {
+  token_symbol: string
+  quantity_displayed: number
+  raw_token_in: number
+  usdc_amount: number | null
   output_label: string
+  spread_vs_cmc_bps: number | null
+  usdc_per_share_estimate: number | null
   retrieved_at: string
-  expires_at: string | null
-  is_final: false
   error: string | null
+  is_ready_to_confirm: boolean
 }
 
 export interface CheckResult {
@@ -53,7 +55,7 @@ export interface CheckResult {
   destination: Destination
   quantity: number
   observed_value_usd: number | null
-  quote: QuoteObservation | null
+  quote: SellQuote | null
   routes: RouteResult[]
   checked_at: string
   rule_version: string

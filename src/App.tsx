@@ -4,6 +4,7 @@ import PlanForm from './components/PlanForm'
 import RouteCard from './components/RouteCard'
 import EvidencePanel from './components/EvidencePanel'
 import { fetchCatalog, fetchMethod, fetchObservations, runCheck } from './api'
+import { isUsdstHolidayDate, marketSessionFromCheck } from './session'
 import type { ObservationPoint } from './api'
 import type {
   CheckResult,
@@ -85,8 +86,8 @@ export default function App() {
       observation: {
         checked_at: result.checked_at,
         observed_price_usd: result.observed_value_usd,
-        quote_amount: result.quote?.output_amount ?? null,
-        market_session: new Date(result.checked_at).getUTCHours() >= 13 && new Date(result.checked_at).getUTCHours() < 20 ? 'US market open' : 'US market closed',
+        quote_amount: result.quote?.usdc_amount ?? null,
+        market_session: isUsdstHolidayDate(result.checked_at.slice(0, 10)) ? 'US market closed' : marketSessionFromCheck(result.checked_at),
         evidence_reviewed: result.rule_version,
       },
       saved_at: new Date().toISOString(),
@@ -156,14 +157,20 @@ export default function App() {
             {result.quote && (
               <div className="quote-strip">
                 <div>
-                  <span className="quote-label">Secondary quote (read-only)</span>
-                  {result.quote.error
+                  <span className="quote-label">
+                    Sell {result.quantity} {result.instrument.token_symbol} → USDC
+                  </span>
+                  {result.quote.error || result.quote.usdc_amount == null
                     ? <span className="quote-value warn">No quote from this provider</span>
-                    : <span className="quote-value">{result.quote.output_amount} {result.quote.output_label}</span>}
+                    : <span className="quote-value">${result.quote.usdc_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>}
                 </div>
                 <p className="field-hint">
-                  Provider {result.quote.provider} · retrieved {new Date(result.quote.retrieved_at).toLocaleTimeString()}
-                  {result.quote.expires_at && ` · expires ${new Date(result.quote.expires_at).toLocaleTimeString()}`}
+                  Jupiter Swap V2 (read-only) · retrieved {new Date(result.quote.retrieved_at).toLocaleTimeString()}
+                  {result.quote.spread_vs_cmc_bps != null && result.quote.spread_vs_cmc_bps !== 0 && result.quote.spread_vs_cmc_bps > 0
+                    ? ` · quotes +${result.quote.spread_vs_cmc_bps.toFixed(0)} bps above CMC`
+                    : result.quote.spread_vs_cmc_bps != null && result.quote.spread_vs_cmc_bps !== 0
+                      ? ` · quotes ${result.quote.spread_vs_cmc_bps.toFixed(0)} bps below CMC`
+                      : ''}
                   . Estimate only — never a guaranteed fill.
                 </p>
               </div>

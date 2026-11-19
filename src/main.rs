@@ -9,7 +9,7 @@ use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::routing::get;
 use axum::{Json, Router};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 use passage_watch::cmc::{CmcClient, ENDPOINTS};
@@ -19,12 +19,17 @@ use passage_watch::engine::{self, rule_version};
 use passage_watch::model::{Destination, Instrument, MarketSession, Onboarding, PlanContext};
 use passage_watch::route::RouteResult;
 use passage_watch::rpc::SolanaRpc;
+use passage_watch::sell_quote::{sell_quote_usdc, SellInput};
 use passage_watch::unit::active_multiplier;
+
+use std::time::Duration;
 
 #[derive(Clone)]
 struct AppState {
     cmc: Arc<CmcClient>,
     rpc: Arc<SolanaRpc>,
+    http: reqwest::Client,
+    cache: Arc<passage_watch::cache::Cache>,
 }
 
 #[tokio::main]
@@ -35,9 +40,15 @@ async fn main() {
 
     let config = config::load().expect("configuration error");
     let port = config.port;
+    let http = reqwest::Client::builder()
+        .timeout(Duration::from_secs(10))
+        .build()
+        .expect("http client");
     let state = AppState {
         cmc: Arc::new(CmcClient::new(&config)),
         rpc: Arc::new(SolanaRpc::default()),
+        http,
+        cache: Arc::new(passage_watch::cache::Cache::new(Duration::from_secs(45))),
     };
 
     let app = Router::new()
@@ -183,42 +194,77 @@ async fn check(
             Json(json!({ "error": "instrument not found" })),
         ))?;
 
-    // Resolve the Solana contract for identity display; unknown if unavailable.
-    if let Ok(Some(contract)) = s.cmc.contract_for(q.crypto_id).await {
-        instrument.contract = contract;
+    // Resolve the Solana contract (cached). If unavailable, unit stays unknown
+    // and sell-side quote amounts are suppressed — we never guess.
+    let contract_key = format!("contract:{}", q.crypto_id);
+    if instrument.contract.is_empty() {
+        let got = passage_watch::cache::get_or_load(&s.cache, &contract_key, || {
+            let client = s.cmc.clone();
+            async move {
+                client
+                    .contract_for(q.crypto_id)
+                    .await
+                    .map_err(|e| e.to_string())
+                    .map(|c| c.unwrap_or_default())
+            }
+        })
+        .await;
+        if let Ok(c) = got {
+            instrument.contract = c;
+        }
     }
 
-    // Resolve the active multiplier from the parsed mint. If it cannot be
-    // resolved, unit_basis stays UNKNOWN and we do not present share quantities.
+    // Resolve the active multiplier from the parsed mint via cached RPC.
     let now_secs = chrono::Utc::now().timestamp();
     let mut active_unit: Option<passage_watch::unit::ScaledUiConfig> = None;
     if !instrument.contract.is_empty() {
-        if let Ok(cfg) = s.rpc.scaled_ui_config(&instrument.contract).await {
-            if active_multiplier(&cfg, now_secs).is_some() {
-                instrument.unit_basis = passage_watch::model::UnitBasis::Verified;
-                active_unit = Some(cfg);
+        let key = format!("mint:{}", instrument.contract);
+        let res = passage_watch::cache::get_or_load(&s.cache, &key, || {
+            let rpc = s.rpc.clone();
+            let mint = instrument.contract.clone();
+            async move {
+                rpc.scaled_ui_config(&mint)
+                    .await
+                    .map(|c| serde_json::to_string(&c).expect("serialize config"))
+                    .map_err(|e| e.to_string())
+            }
+        })
+        .await;
+        if let Ok(json) = res {
+            if let Ok(cfg) = serde_json::from_str::<passage_watch::unit::ScaledUiConfig>(&json) {
+                if active_multiplier(&cfg, now_secs).is_some() {
+                    instrument.unit_basis = passage_watch::model::UnitBasis::Verified;
+                    active_unit = Some(cfg);
+                }
             }
         }
     }
 
-    // Read-only secondary quote (Jupiter V2, no taker -> quote only, keyless).
-    let mut quote = fetch_secondary_quote(&instrument.token_symbol, q.quantity).await;
-    // Normalize raw base units into displayed share-equivalents when the unit
-    // basis is verified: raw / 10^decimals / active multiplier.
-    if let (Some(q), Some(unit)) = (quote.as_mut(), active_unit.as_ref()) {
-        if let Some(raw) = q.output_amount {
-            if let Some(m) = active_multiplier(unit, now_secs) {
-                // Solar Scaled UI Amount rule: displayed = raw × multiplier / 10^decimals.
-                let displayed = raw * m / 10_f64.powi(unit.decimals as i32);
-                q.output_amount = Some(displayed);
-                q.output_label = "share-equivalents".into();
-            }
-        }
+    // Primary liquidity signal: Sell N tokens -> USDC. Direction and semantics
+    // were corrected: input = your holding, output = USDC, not a share quote.
+    let mut quote: Option<passage_watch::sell_quote::SellQuote> = None;
+    if let Some(unit) = active_unit.as_ref() {
+        let sell = sell_quote_usdc(
+            &s.http,
+            SellInput {
+                token_symbol: &instrument.token_symbol,
+                token_mint: &instrument.contract,
+                quantity_displayed: q.quantity,
+                unit: *unit,
+                cmc_observed_price_per_share: instrument.observed_price_usd,
+            },
+            &now_iso(),
+        )
+        .await;
+        quote = Some(sell);
     }
 
     let now = chrono_like_now();
-    let session = MarketSession::from_utc_hour(now.hour);
+    let session =
+        MarketSession::from_utc_datetime(now.year, now.month, now.day, now.weekday(), now.hour);
     let today = SimpleDate::new(now.year, now.month, now.day);
+
+    let observed = instrument.observed_price_usd.map(|p| p * q.quantity);
 
     let ctx = PlanContext {
         instrument: instrument.clone(),
@@ -230,15 +276,14 @@ async fn check(
         market_session: session,
         has_secondary_quote: quote
             .as_ref()
-            .map(|x| x.output_amount.is_some())
+            .map(|x| x.usdc_amount.is_some())
             .unwrap_or(false),
-        quote_output_amount: quote.as_ref().and_then(|x| x.output_amount),
+        quote_output_amount: quote.as_ref().and_then(|x| x.usdc_amount),
         quote_expired: false,
         evidence_reviewed_at: "2026-11-18".into(),
     };
 
     let routes: Vec<RouteResult> = engine::evaluate(&ctx, today);
-    let observed = instrument.observed_price_usd.map(|p| p * q.quantity);
 
     Ok(Json(json!({
         "instrument": instrument,
@@ -286,119 +331,20 @@ async fn method() -> Json<Value> {
     }))
 }
 
-// ---- secondary quote adapter ------------------------------------------------
-
-#[derive(Debug, Serialize)]
-struct QuoteObservation {
-    provider: &'static str,
-    input_amount_usd: f64,
-    output_amount: Option<f64>,
-    output_label: String,
-    retrieved_at: String,
-    expires_at: Option<String>,
-    is_final: bool,
-    error: Option<String>,
-}
-
-const USDC_MINT: &str = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
-
-async fn fetch_secondary_quote(token_symbol: &str, quantity: f64) -> Option<QuoteObservation> {
-    let mint = match token_symbol {
-        "AAPLX" => "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
-        "NVDAX" => "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
-        "TSLAX" => "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
-        "SPYX" => "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
-        _ => return None,
-    };
-
-    // USDC has 6 decimals; quantity is displayed share-equivalents, so a
-    // notional approximation uses a reference price. This is deliberately a
-    // display estimate; the authoritative quote is what Jupiter returns.
-    let notional_usd = match token_symbol {
-        "AAPLX" => 350.0,
-        "NVDAX" => 160.0,
-        "TSLAX" => 384.0,
-        "SPYX" => 739.0,
-        _ => 1.0,
-    } * quantity;
-    let amount = ((notional_usd * 1_000_000.0).floor() as u64).to_string();
-
-    let url = format!(
-        "https://api.jup.ag/swap/v2/order?inputMint={}&outputMint={}&amount={}&slippageBps=50",
-        USDC_MINT, mint, amount
-    );
-    let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(8))
-        .build()
-        .ok()?;
-    let res = client
-        .get(&url)
-        .header("Accept", "application/json")
-        .send()
-        .await;
-    let retrieved_at = now_iso();
-
-    let observation = match res {
-        Ok(r) if r.status().is_success() => match r.json::<Value>().await {
-            Ok(v) => {
-                let out = v
-                    .get("outAmount")
-                    .and_then(|x| x.as_str())
-                    .and_then(|s| s.parse::<f64>().ok());
-                let err = v.get("error").and_then(|x| x.as_str()).map(String::from);
-                QuoteObservation {
-                    provider: "Jupiter Swap V2 (read-only)",
-                    input_amount_usd: notional_usd,
-                    output_amount: out,
-                    output_label: "raw token units".into(),
-                    retrieved_at,
-                    expires_at: v.get("expireAt").and_then(|x| x.as_str()).map(String::from),
-                    is_final: false,
-                    error: err,
-                }
-            }
-            Err(e) => QuoteObservation {
-                provider: "Jupiter Swap V2 (read-only)",
-                input_amount_usd: notional_usd,
-                output_amount: None,
-                output_label: "raw token units".into(),
-                retrieved_at,
-                expires_at: None,
-                is_final: false,
-                error: Some(format!("invalid response: {e}")),
-            },
-        },
-        Ok(r) => QuoteObservation {
-            provider: "Jupiter Swap V2 (read-only)",
-            input_amount_usd: notional_usd,
-            output_amount: None,
-            output_label: "raw token units".into(),
-            retrieved_at,
-            expires_at: None,
-            is_final: false,
-            error: Some(format!("HTTP {}", r.status())),
-        },
-        Err(e) => QuoteObservation {
-            provider: "Jupiter Swap V2 (read-only)",
-            input_amount_usd: notional_usd,
-            output_amount: None,
-            output_label: "raw token units".into(),
-            retrieved_at,
-            expires_at: None,
-            is_final: false,
-            error: Some(e.to_string()),
-        },
-    };
-    Some(observation)
-}
-
-// Minimal UTC timestamp without pulling in a date-time crate for formatting.
+// Minimal UTC timestamp handling.
 struct Now {
     iso: String,
     year: i32,
     month: u32,
     day: u32,
+    weekday: u32, // chrono convention: 0 = Sunday, 1 = Monday, ... 6 = Saturday
     hour: u32,
+}
+
+impl Now {
+    fn weekday(&self) -> u32 {
+        self.weekday
+    }
 }
 
 fn now_iso() -> String {
@@ -412,6 +358,7 @@ fn chrono_like_now() -> Now {
         year: now.year(),
         month: now.month(),
         day: now.day(),
+        weekday: now.weekday().num_days_from_sunday(),
         hour: now.hour(),
     }
 }

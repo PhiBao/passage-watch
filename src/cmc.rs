@@ -122,13 +122,16 @@ impl CmcClient {
         Ok(data)
     }
 
+    /// Living catalog: discovery-driven, not hardcoded.
+    ///
+    /// Queries the CMC RWA universe (equities), then `quotes/latest`, then
+    /// resolves each candidate token's Solana contract. Only tokens issued by
+    /// Backed (the xStocks issuer) with a verified Solana contract are enabled.
     pub async fn catalog(&self) -> Result<Vec<Instrument>, CmcError> {
-        // Underlying symbols that back our four supported xStocks wrappers.
-        let symbols = ["AAPL", "NVDA", "TSLA", "SPY"].join(",");
         let (_, map): (_, RwaMap) = self
             .get(
                 "/v5/real-world-assets/map",
-                &[("symbol", symbols), ("limit", "20".into())],
+                &[("asset_type", "stock".into()), ("limit", "100".into())],
             )
             .await?;
 
@@ -147,28 +150,32 @@ impl CmcClient {
             )
             .await?;
 
+        // Fast discovery: join Backed (xStocks) tokens from the quotes view.
+        // Contracts + unit are verified at check time via `contract_for` + RPC,
+        // so the catalog never performs one upstream call per token.
         let mut instruments = Vec::new();
         for asset in quotes.rwa_assets {
-            for token in asset.tokens {
-                if !is_supported_wrapper(&token.symbol) {
+            for token in &asset.tokens {
+                let Some(token_symbol) = token.symbol.clone() else { continue };
+                let Some(crypto_id) = token.crypto_id else { continue };
+                let is_backed = token.issuer_name.as_deref().unwrap_or_default().contains("Backed");
+                if !is_backed {
                     continue;
                 }
-                let price = token.price;
                 instruments.push(Instrument {
-                    underlying: asset.symbol.clone(),
-                    underlying_name: asset.name.clone(),
+                    underlying: asset.symbol.clone().unwrap_or_default(),
+                    underlying_name: asset.name.clone().unwrap_or_default(),
                     rwa_id: asset.rwa_id,
-                    token_symbol: token.symbol.clone(),
-                    crypto_id: token.crypto_id,
+                    token_symbol,
+                    crypto_id,
                     issuer: token.issuer_name.clone().unwrap_or_default(),
                     network: "Solana".into(),
                     contract: String::new(),
-                    observed_price_usd: price,
+                    observed_price_usd: token.price,
                     unit_basis: UnitBasis::Unknown,
                 });
             }
         }
-        // Stable, predictable ordering for judge reproducibility.
         instruments.sort_by(|a, b| a.token_symbol.cmp(&b.token_symbol));
         Ok(instruments)
     }
@@ -226,10 +233,6 @@ impl CmcClient {
     }
 }
 
-fn is_supported_wrapper(symbol: &str) -> bool {
-    matches!(symbol, "AAPLX" | "NVDAX" | "TSLAX" | "SPYX")
-}
-
 #[derive(Debug, Deserialize)]
 struct RwaMap {
     #[serde(default)]
@@ -252,17 +255,22 @@ struct RwaQuotes {
 #[derive(Debug, Deserialize)]
 struct RwaAssetQuote {
     rwa_id: u64,
-    symbol: String,
-    name: String,
+    #[serde(default)]
+    symbol: Option<String>,
+    #[serde(default)]
+    name: Option<String>,
     #[serde(default)]
     tokens: Vec<RwaToken>,
 }
 
 #[derive(Debug, Deserialize)]
 struct RwaToken {
-    symbol: String,
+    #[serde(default)]
+    symbol: Option<String>,
+    #[serde(default)]
     price: Option<f64>,
-    crypto_id: u64,
+    #[serde(default)]
+    crypto_id: Option<u64>,
     #[serde(default)]
     issuer_name: Option<String>,
 }

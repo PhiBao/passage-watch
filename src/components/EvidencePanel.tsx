@@ -1,4 +1,5 @@
 import type { CheckResult, PlanRecord, PlanChange } from '../types'
+import { marketSessionFromCheck } from '../session'
 
 function changesFor(record: PlanRecord | null, current: CheckResult | null, price: number | null, session: string): PlanChange[] {
   if (!record || !current) return []
@@ -12,11 +13,11 @@ function changesFor(record: PlanRecord | null, current: CheckResult | null, pric
     out.push({ field: 'Market session', before: record.observation.market_session, after: session })
   }
   const qBefore = record.observation.quote_amount
-  const qAfter = current.quote?.output_amount ?? null
+  const qAfter = current.quote?.usdc_amount ?? null
   if (qBefore != null && qAfter != null && qBefore !== qAfter) {
-    out.push({ field: 'Secondary quote', before: String(qBefore), after: String(qAfter) })
+    out.push({ field: 'Sell quote', before: `$${qBefore.toFixed(2)}`, after: `$${qAfter.toFixed(2)}` })
   } else if (qBefore != null && qAfter == null) {
-    out.push({ field: 'Secondary quote', before: String(qBefore), after: 'no quote from this provider' })
+    out.push({ field: 'Sell quote', before: `$${qBefore.toFixed(2)}`, after: 'no quote from this provider' })
   }
   return out
 }
@@ -27,7 +28,7 @@ export default function EvidencePanel({ result, method, savedPlan }: {
   savedPlan: PlanRecord | null
 }) {
   const price = result?.observed_value_usd ?? null
-  const session = result ? (new Date(result.checked_at).getUTCHours() >= 13 && new Date(result.checked_at).getUTCHours() < 20 ? 'US market open' : 'US market closed') : '—'
+  const session = result ? marketSessionFromCheck(result.checked_at) : '—'
   const changes = changesFor(savedPlan, result, price, session)
 
   return (

@@ -77,6 +77,16 @@ impl MarketSession {
             MarketSession::UsMarketClosed
         }
     }
+
+    /// Authoritative session using the NYSE holiday calendar. weekday is
+    /// chrono-style (0 = Sunday) as provided by the server's `chrono_like_now`.
+    pub fn from_utc_datetime(year: i32, month: u32, day: u32, weekday: u32, hour: u32) -> Self {
+        if crate::calendar::session_is_open(year, month, day, weekday, hour) {
+            MarketSession::UsMarketOpen
+        } else {
+            MarketSession::UsMarketClosed
+        }
+    }
 }
 
 #[cfg(test)]

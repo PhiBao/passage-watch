@@ -8,7 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct ScaledUiConfig {
     pub multiplier: f64,
     pub new_multiplier: f64,
