@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Passage Watch icon: one holding, two destinations. Dark terminal skin. -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="38%" r="62%">
+      <stop offset="0%" stop-color="#3CE081" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#060A0D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#8CB4DC" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#060A0D"/>
+  <rect width="1024" height="1024" fill="url(#grid)"/>
+  <rect width="1024" height="1024" fill="url(#glow)"/>
+
+  <!-- route mark, scaled from the product's 64px mark -->
+  <g transform="translate(122 128) scale(12)" filter="url(#softglow)">
+    <path d="M16 32h14M30 32c6 0 6-11 18-11M30 32c6 0 6 11 18 11"
+          fill="none" stroke="#3CE081" stroke-width="3.4"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="16" cy="32" r="3.4" fill="#3CE081"/>
+    <circle cx="49" cy="21" r="3.4" fill="#63EB9D"/>
+    <circle cx="49" cy="43" r="3.4" fill="#63EB9D"/>
+  </g>
+</svg>
