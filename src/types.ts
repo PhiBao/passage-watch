@@ -35,6 +35,7 @@ export interface RouteResult {
   prerequisites: string[]
   unknowns: string[]
   source_urls: string[]
+  when?: string | null
 }
 
 export interface SellQuote {

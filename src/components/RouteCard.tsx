@@ -19,6 +19,7 @@ export default function RouteCard({ route }: { route: RouteResult }) {
         <span className={`state state-${route.evidence_state}`}>{stateLabel[route.evidence_state]}</span>
       </div>
       <p className="route-outcome">{route.outcome}</p>
+      {route.when && <p className="route-when">Available: {route.when}</p>}
 
       {route.prerequisites.length > 0 && (
         <div className="route-block">

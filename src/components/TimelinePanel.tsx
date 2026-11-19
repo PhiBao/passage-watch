@@ -10,7 +10,10 @@ function fmtIso(iso: string): string {
 function routeChips(routes: Timeline['routes']): string {
   return routes
     .filter((r) => r.applicable)
-    .map((r) => `${r.kind} (${r.evidence_state})`)
+    .map((r) => {
+      const base = `${r.kind} (${r.evidence_state})`
+      return r.when ? `${base} · ${r.when}` : base
+    })
     .join(', ')
 }
 

@@ -34,4 +34,6 @@ pub struct RouteResult {
     pub prerequisites: Vec<String>,
     pub unknowns: Vec<String>,
     pub source_urls: Vec<String>,
+    /// When this route becomes available to the user (display label), if known.
+    pub when: Option<String>,
 }

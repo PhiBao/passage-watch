@@ -73,6 +73,7 @@ export interface TimelineRoute {
   kind: string
   applicable: boolean
   evidence_state: string
+  when?: string | null
 }
 
 export interface Timeline {

@@ -71,6 +71,11 @@ pub fn evaluate(ctx: &PlanContext, today: crate::date::SimpleDate) -> Vec<RouteR
             "Quoted output is an estimate, not a guaranteed fill".into(),
         ],
         source_urls: vec!["https://developers.jup.ag/docs/api-reference/swap/order.md".into()],
+        when: Some(if ctx.has_secondary_quote {
+            "Immediately (quote is live)".into()
+        } else {
+            "Whenever a quote is live (provider-dependent)".into()
+        }),
     });
 
     // 2. Market Flow — stablecoin proceeds, whitelisted direct client.
@@ -97,6 +102,7 @@ pub fn evaluate(ctx: &PlanContext, today: crate::date::SimpleDate) -> Vec<RouteR
             "Actual sale proceeds not known without operational access".into(),
         ],
         source_urls: sources_for(&reg, "MARKET_FLOW"),
+        when: Some(when_for_session(ctx.market_session)),
     });
 
     // 3. xChange — atomic stablecoin settlement, onboarded clients.
@@ -121,6 +127,7 @@ pub fn evaluate(ctx: &PlanContext, today: crate::date::SimpleDate) -> Vec<RouteR
             "User access and availability not verified".into(),
         ],
         source_urls: sources_for(&reg, "XCHANGE"),
+        when: Some(when_for_session(ctx.market_session)),
     });
 
     // 4. xPort — shares in brokerage, distinct destination.
@@ -156,6 +163,7 @@ pub fn evaluate(ctx: &PlanContext, today: crate::date::SimpleDate) -> Vec<RouteR
             "Route minimum and settlement duration not published on the route page".into(),
         ],
         source_urls: sources_for(&reg, "XPORT"),
+        when: Some("When both onboardings are met".into()),
     });
 
     if ctx.market_session == MarketSession::UsMarketClosed {
@@ -168,6 +176,13 @@ pub fn evaluate(ctx: &PlanContext, today: crate::date::SimpleDate) -> Vec<RouteR
     }
 
     out
+}
+
+fn when_for_session(session: MarketSession) -> String {
+    match session {
+        MarketSession::UsMarketOpen => "Now".into(),
+        MarketSession::UsMarketClosed => "When the US session opens".into(),
+    }
 }
 
 fn xport_ready_message(ready: bool) -> String {
