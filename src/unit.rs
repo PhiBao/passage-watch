@@ -13,6 +13,7 @@ pub struct ScaledUiConfig {
     pub multiplier: f64,
     pub new_multiplier: f64,
     pub new_multiplier_effective_timestamp: i64,
+    pub decimals: u8,
 }
 
 /// Selects the multiplier that is active at `now_unix`.
@@ -50,6 +51,15 @@ pub fn displayed_to_base(displayed: f64, decimals: u8, multiplier: f64) -> Optio
     Some(raw.floor() as u128)
 }
 
+/// Scales raw base units into displayed share-equivalents per the Solana
+/// Scaled UI Amount rule: UIAmount = raw × multiplier / 10^decimals.
+pub fn base_to_displayed(raw: f64, decimals: u8, multiplier: f64) -> Option<f64> {
+    if !raw.is_finite() || raw < 0.0 || !multiplier.is_finite() || multiplier <= 0.0 {
+        return None;
+    }
+    Some(raw * multiplier / 10_f64.powi(decimals as i32))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -59,6 +69,7 @@ mod tests {
             multiplier: 1.0032690125398187,
             new_multiplier: 1.0038023030588032,
             new_multiplier_effective_timestamp: eff,
+            decimals: 8,
         }
     }
 
@@ -84,6 +95,7 @@ mod tests {
             multiplier: f64::NAN,
             new_multiplier: 1.0,
             new_multiplier_effective_timestamp: 1,
+            decimals: 8,
         };
         assert!(active_multiplier(&bad, 2_000_000_000).is_none());
     }
@@ -93,5 +105,15 @@ mod tests {
         // 2 share-equivalents, 8 decimals, multiplier 2 -> 1 raw unit per share.
         let base = displayed_to_base(2.0, 8, 2.0).unwrap();
         assert_eq!(base, 100_000_000);
+    }
+
+    #[test]
+    fn base_to_displayed_recovers_displayed_value() {
+        let decimals = 8;
+        let multiplier = 1.0032690125398187;
+        let displayed = 74.19f64;
+        let base = displayed_to_base(displayed, decimals, multiplier).unwrap();
+        let back = base_to_displayed(base as f64, decimals, multiplier).unwrap();
+        assert!((back - displayed).abs() < 0.001);
     }
 }

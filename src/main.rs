@@ -141,12 +141,12 @@ async fn check(
     // Resolve the active multiplier from the parsed mint. If it cannot be
     // resolved, unit_basis stays UNKNOWN and we do not present share quantities.
     let now_secs = chrono::Utc::now().timestamp();
-    let mut active_multiplier_value: Option<f64> = None;
+    let mut active_unit: Option<passage_watch::unit::ScaledUiConfig> = None;
     if !instrument.contract.is_empty() {
         if let Ok(cfg) = s.rpc.scaled_ui_config(&instrument.contract).await {
-            if let Some(m) = active_multiplier(&cfg, now_secs) {
-                active_multiplier_value = Some(m);
+            if active_multiplier(&cfg, now_secs).is_some() {
                 instrument.unit_basis = passage_watch::model::UnitBasis::Verified;
+                active_unit = Some(cfg);
             }
         }
     }
@@ -154,12 +154,15 @@ async fn check(
     // Read-only secondary quote (Jupiter V2, no taker -> quote only, keyless).
     let mut quote = fetch_secondary_quote(&instrument.token_symbol, q.quantity).await;
     // Normalize raw base units into displayed share-equivalents when the unit
-    // basis is verified: raw / 10^decimals / active_multiplier.
-    if let (Some(q), Some(m)) = (quote.as_mut(), active_multiplier_value) {
+    // basis is verified: raw / 10^decimals / active multiplier.
+    if let (Some(q), Some(unit)) = (quote.as_mut(), active_unit.as_ref()) {
         if let Some(raw) = q.output_amount {
-            let displayed = raw / 1e8 / m; // xStocks use 8 decimals on Solana
-            q.output_amount = Some(displayed);
-            q.output_label = "share-equivalents".into();
+            if let Some(m) = active_multiplier(unit, now_secs) {
+                // Solar Scaled UI Amount rule: displayed = raw × multiplier / 10^decimals.
+                let displayed = raw * m / 10_f64.powi(unit.decimals as i32);
+                q.output_amount = Some(displayed);
+                q.output_label = "share-equivalents".into();
+            }
         }
     }
 

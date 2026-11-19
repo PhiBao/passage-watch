@@ -55,13 +55,22 @@ impl SolanaRpc {
             .await
             .map_err(|e| RpcError::Request(e.to_string()))?;
 
-        let extensions = value
+        let info = value
             .get("result")
             .and_then(|r| r.get("value"))
             .and_then(|v| v.get("data"))
             .and_then(|d| d.get("parsed"))
             .and_then(|p| p.get("info"))
-            .and_then(|i| i.get("extensions"))
+            .ok_or(RpcError::Unexpected)?;
+
+        let decimals = info
+            .get("decimals")
+            .and_then(|d| d.as_u64())
+            .and_then(|d| u8::try_from(d).ok())
+            .unwrap_or(0);
+
+        let extensions = info
+            .get("extensions")
             .and_then(|e| e.as_array())
             .ok_or(RpcError::Unexpected)?;
 
@@ -85,6 +94,7 @@ impl SolanaRpc {
                         multiplier: m,
                         new_multiplier: nm,
                         new_multiplier_effective_timestamp: eff,
+                        decimals,
                     });
                 }
             }
@@ -94,6 +104,7 @@ impl SolanaRpc {
             multiplier: 1.0,
             new_multiplier: 1.0,
             new_multiplier_effective_timestamp: 0,
+            decimals,
         })
     }
 

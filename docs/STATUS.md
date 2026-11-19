@@ -28,7 +28,7 @@ Vertical slice complete and running end-to-end against live APIs. Ready for demo
 - **Secondary quote verified keyless**: Jupiter Swap V2 `/order` returns a read-only quote (no `taker`) with no API key. This removes an access dependency.
 
 - Observation history panel from real CMC daily quotes (10 points), powering the "change since saved" demo.
-- Zero compiler warnings; clean git tree.
+- Quote normalization uses the parsed mint's real `decimals` (not hardcoded 8) via a round-trip-tested pair of converters in `src/unit.rs`. 15/15 tests pass.
 
 ## Next (remaining for submission)
 
