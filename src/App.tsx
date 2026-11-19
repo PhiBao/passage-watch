@@ -242,6 +242,29 @@ export default function App() {
               </div>
             )}
 
+            {result.size_quotes && result.size_quotes.length > 0 && (
+              <div className="size-strip">
+                <span className="quote-label">Liquidity at your size</span>
+                <div className="size-grid">
+                  {result.size_quotes.map((s) => (
+                    <div className="size-cell" key={s.fraction}>
+                      <div className="size-head">
+                        <span className="size-fraction">{Math.round(s.fraction * 100)}%</span>
+                        <span className="size-qty">{s.quantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} units</span>
+                      </div>
+                      {s.usdc_amount == null
+                        ? <span className="size-value warn">no quote</span>
+                        : <span className="size-value">${s.usdc_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>}
+                      <span className="size-sub">
+                        {s.usdc_per_share != null ? `$${s.usdc_per_share.toFixed(2)}/share` : '—'}
+                        {s.spread_vs_cmc_bps != null ? ` · ${s.spread_vs_cmc_bps >= 0 ? '+' : ''}${s.spread_vs_cmc_bps.toFixed(0)} bps` : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {observations.length > 1 && (
               <div className="observation-strip">
                 <div className="observation-head">

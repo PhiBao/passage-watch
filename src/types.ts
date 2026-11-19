@@ -51,6 +51,15 @@ export interface SellQuote {
   is_ready_to_confirm: boolean
 }
 
+export interface SizeQuote {
+  fraction: number
+  quantity: number
+  usdc_amount: number | null
+  usdc_per_share: number | null
+  spread_vs_cmc_bps: number | null
+  error: string | null
+}
+
 export interface CheckResult {
   instrument: Instrument
   destination: Destination
@@ -58,6 +67,7 @@ export interface CheckResult {
   deadline: string
   observed_value_usd: number | null
   quote: SellQuote | null
+  size_quotes: SizeQuote[]
   routes: RouteResult[]
   checked_at: string
   rule_version: string

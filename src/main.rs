@@ -276,21 +276,27 @@ async fn check(
 
     // Primary liquidity signal: Sell N tokens -> USDC. Direction and semantics
     // were corrected: input = your holding, output = USDC, not a share quote.
+    let now_iso_str = now_iso();
     let mut quote: Option<passage_watch::sell_quote::SellQuote> = None;
+    let mut size_quotes: Vec<passage_watch::sell_quote::SizeQuote> = Vec::new();
     if let Some(unit) = active_unit.as_ref() {
-        let sell = sell_quote_usdc(
-            &s.http,
-            SellInput {
-                token_symbol: &instrument.token_symbol,
-                token_mint: &instrument.contract,
-                quantity_displayed: q.quantity,
-                unit: *unit,
-                cmc_observed_price_per_share: instrument.observed_price_usd,
-            },
-            &now_iso(),
-        )
-        .await;
-        quote = Some(sell);
+        let input = SellInput {
+            token_symbol: &instrument.token_symbol,
+            token_mint: &instrument.contract,
+            quantity_displayed: q.quantity,
+            unit: *unit,
+            cmc_observed_price_per_share: instrument.observed_price_usd,
+        };
+        quote = Some(sell_quote_usdc(&s.http, input.clone(), &now_iso_str).await);
+        if q.quantity > 0.0 {
+            size_quotes = passage_watch::sell_quote::sell_quote_sizes(
+                &s.http,
+                &input,
+                &[0.25, 0.5, 1.0],
+                &now_iso_str,
+            )
+            .await;
+        }
     }
 
     let now = chrono_like_now();
@@ -326,6 +332,7 @@ async fn check(
         "deadline": q.deadline,
         "observed_value_usd": observed,
         "quote": quote,
+        "size_quotes": size_quotes,
         "routes": routes,
         "checked_at": now.iso,
         "rule_version": rule_version(),

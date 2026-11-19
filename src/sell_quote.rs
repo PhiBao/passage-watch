@@ -30,6 +30,18 @@ pub struct SellQuote {
     pub is_ready_to_confirm: bool,
 }
 
+/// A quote at one fraction of the holder's position, to show how liquidity
+/// degrades with size. Shares use the same read-only Jupiter path.
+#[derive(Debug, Clone, Serialize)]
+pub struct SizeQuote {
+    pub fraction: f64,
+    pub quantity: f64,
+    pub usdc_amount: Option<f64>,
+    pub usdc_per_share: Option<f64>,
+    pub spread_vs_cmc_bps: Option<f64>,
+    pub error: Option<String>,
+}
+
 #[derive(Debug, Deserialize)]
 struct JupiterOrder {
     #[serde(default, rename = "outAmount")]
@@ -38,6 +50,7 @@ struct JupiterOrder {
     error: Option<String>,
 }
 
+#[derive(Clone)]
 pub struct SellInput<'a> {
     pub token_symbol: &'a str,
     pub token_mint: &'a str,
@@ -176,4 +189,39 @@ pub async fn sell_quote_usdc(client: &Client, input: SellInput<'_>, now_iso: &st
             },
         },
     }
+}
+
+/// Quote the same holding at several fractions (e.g. 0.25, 0.5, 1.0) so the
+/// UI can show how the sell price changes with size. Failures are per-size.
+pub async fn sell_quote_sizes(
+    client: &Client,
+    input: &SellInput<'_>,
+    fractions: &[f64],
+    now_iso: &str,
+) -> Vec<SizeQuote> {
+    let mut out = Vec::new();
+    for &fraction in fractions {
+        let qty = input.quantity_displayed * fraction;
+        let sq = sell_quote_usdc(
+            client,
+            SellInput {
+                token_symbol: input.token_symbol,
+                token_mint: input.token_mint,
+                quantity_displayed: qty,
+                unit: input.unit,
+                cmc_observed_price_per_share: input.cmc_observed_price_per_share,
+            },
+            now_iso,
+        )
+        .await;
+        out.push(SizeQuote {
+            fraction,
+            quantity: qty,
+            usdc_amount: sq.usdc_amount,
+            usdc_per_share: sq.usdc_per_share_estimate,
+            spread_vs_cmc_bps: sq.spread_vs_cmc_bps,
+            error: sq.error,
+        });
+    }
+    out
 }
