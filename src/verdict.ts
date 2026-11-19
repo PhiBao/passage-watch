@@ -14,8 +14,18 @@ export function verdict(result: CheckResult | null): string | null {
   const needsPrep = routes.filter((r) => r.applicable && r.evidence_state === 'requires_preparation').length
   const different = routes.find((r) => r.applicable && r.evidence_state === 'different_destination')
 
+  const quantity = result.quantity || 0
+  const perUnit = quantity > 0 ? quote.usdc_amount / quantity : null
+  const cmiPerUnit = result.observed_value_usd != null && quantity > 0 ? result.observed_value_usd / quantity : null
+  const unitText =
+    perUnit != null && cmiPerUnit != null
+      ? ` (${perUnit.toFixed(2)}/share vs CMC ${cmiPerUnit.toFixed(2)}/share)`
+      : perUnit != null
+        ? ` (${perUnit.toFixed(2)}/share)`
+        : ''
+
   const base = destination === 'USDC_SOLANA'
-    ? `Sell ${result.quantity} ${result.instrument.token_symbol} → USDC ≈ $${quote.usdc_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}.`
+    ? `Sell ${result.quantity} ${result.instrument.token_symbol} → USDC ≈ $${quote.usdc_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}${unitText} via Jupiter read-only.`
     : `For brokerage shares, look at xPort (prereqs below) rather than cash — shares are not cash received.`
 
   let add = ''
