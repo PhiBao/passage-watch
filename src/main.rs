@@ -48,12 +48,62 @@ async fn main() {
         .route("/api/v1/check", get(check))
         .route("/api/v1/method", get(method))
         .route("/api/v1/observations/:id", get(observations))
+        .fallback(static_files)
         .with_state(state);
 
     let addr = format!("0.0.0.0:{port}");
     tracing::info!(%addr, "Passage Watch listening");
     let listener = tokio::net::TcpListener::bind(&addr).await.expect("bind");
     axum::serve(listener, app).await.expect("serve");
+}
+
+/// Serves the built frontend from `dist/` (produced by `pnpm build`). In dev,
+/// Vite serves the frontend instead and proxies `/api` to this service.
+async fn static_files(req: axum::extract::Request) -> axum::response::Response {
+    use axum::body::Body;
+    use axum::response::IntoResponse;
+
+    let path = req.uri().path();
+    let clean = path.trim_start_matches('/');
+    let candidate = if clean.is_empty() {
+        "index.html"
+    } else {
+        clean
+    };
+    let candidate = format!("dist/{}", candidate);
+
+    match std::fs::read(&candidate) {
+        Ok(bytes) => {
+            let content_type = if candidate.ends_with(".html") {
+                "text/html"
+            } else if candidate.ends_with(".js") {
+                "application/javascript"
+            } else if candidate.ends_with(".css") {
+                "text/css"
+            } else if candidate.ends_with(".svg") {
+                "image/svg+xml"
+            } else if candidate.ends_with(".json") {
+                "application/json"
+            } else {
+                "application/octet-stream"
+            };
+            (
+                axum::http::StatusCode::OK,
+                [(axum::http::header::CONTENT_TYPE, content_type)],
+                Body::from(bytes),
+            )
+                .into_response()
+        }
+        Err(_) => {
+            let index = std::fs::read("dist/index.html").unwrap_or_default();
+            (
+                axum::http::StatusCode::OK,
+                [(axum::http::header::CONTENT_TYPE, "text/html")],
+                Body::from(index),
+            )
+                .into_response()
+        }
+    }
 }
 
 async fn health() -> &'static str {
