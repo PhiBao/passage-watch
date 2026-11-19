@@ -53,7 +53,6 @@ export default function App() {
   const [addressInput, setAddressInput] = useState('')
   const [importStatus, setImportStatus] = useState('')
   const [holdings, setHoldings] = useState<Holding[]>([])
-  const selectedInstrument = instruments.find((i) => i.crypto_id === selectedId)
 
   useEffect(() => {
     fetchCatalog()
@@ -89,7 +88,9 @@ export default function App() {
       setObservations(obs.points.filter((p) => p.price_usd != null))
 
       // Exit-window timeline + change history (best-effort; read-only).
-      const tokenSymbol = selectedInstrument?.token_symbol
+      // Look the symbol up from the submitted input, not from a render-time
+      // closure: a fast select-then-check would otherwise skip the timeline.
+      const tokenSymbol = instruments.find((i) => i.crypto_id === input.crypto_id)?.token_symbol
       if (tokenSymbol) {
         const deadline = input.deadline || new Date().toISOString().slice(0, 10)
         const [tl, ch] = await Promise.all([
