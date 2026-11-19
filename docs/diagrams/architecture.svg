@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 1000 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-arch-title pw-arch-desc" id="architecture-root">
+<svg width="1000" height="470" viewBox="0 0 1000 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-arch-title pw-arch-desc" id="architecture-root">
       <title id="pw-arch-title">Passage Watch architecture</title>
       <desc id="pw-arch-desc">A browser holder talks to the Passage Watch Rust service on Fly.io, which reads identity and prices from CoinMarketCap, sell quotes from Jupiter and token units from a Solana RPC, caching results in process.</desc>
       <defs>

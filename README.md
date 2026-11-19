@@ -49,11 +49,11 @@ The product never collapses these into one "redeemable" flag and never declares 
 
 ### How one check runs
 
-![Five steps: choose or scan, resolve identity via CMC, verify units on Solana, quote the sell via Jupiter, then routes and exit window](docs/diagrams/check-pipeline.svg)
+<img src="docs/diagrams/check-pipeline.svg" alt="Five steps: choose or scan, resolve identity via CMC, verify units on Solana, quote the sell via Jupiter, then routes and exit window" width="100%" />
 
 ### Why the exit window matters
 
-![Route availability: secondary sale any time, issuer routes only during the next US session, deadline after it](docs/diagrams/exit-window.svg)
+<img src="docs/diagrams/exit-window.svg" alt="Route availability: secondary sale any time, issuer routes only during the next US session, deadline after it" width="100%" />
 
 A token can be transferable while the process that turns it into cash or shares is closed. Passage shows **when each route can run** and how many NYSE sessions remain before your deadline — without claiming a settlement guarantee.
 
@@ -144,7 +144,7 @@ Passage reads the mint via Solana `getAccountInfo` with `jsonParsed`, selects th
 
 ## Architecture
 
-![Passage Watch architecture: one read-only Rust service on Fly, reading CoinMarketCap, Jupiter and Solana RPC](docs/diagrams/architecture.svg)
+<img src="docs/diagrams/architecture.svg" alt="Passage Watch architecture: one read-only Rust service on Fly, reading CoinMarketCap, Jupiter and Solana RPC" width="100%" />
 
 - No user accounts; the holder's financial inputs stay in browser localStorage.
 - No wallet connection, signing, transactions or execution.

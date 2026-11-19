@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-window-title pw-window-desc" id="exit-window-root">
+<svg width="1000" height="400" viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-window-title pw-window-desc" id="exit-window-root">
       <title id="pw-window-title">Route availability across the exit window</title>
       <desc id="pw-window-desc">Secondary sale can run any time; issuer routes only run during the next US session; the deadline sits after that session.</desc>
       <defs>
