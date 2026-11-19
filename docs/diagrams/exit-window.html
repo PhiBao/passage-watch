@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Passage Watch · Exit window</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #F6F4EE;
+      --color-ink: #172B2A;
+      --color-muted: #4A5A56;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1120px; width: 100%; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+    svg { width: 100%; min-width: 900px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Timeline · Passage Watch</p>
+    <h1>The exit window is a calendar, not a countdown</h1>
+
+    <svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-window-title pw-window-desc">
+      <title id="pw-window-title">Route availability across the exit window</title>
+      <desc id="pw-window-desc">Secondary sale can run any time; issuer routes only run during the next US session; the deadline sits after that session.</desc>
+      <defs>
+        <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(23,43,42,0.10)" />
+        </pattern>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#F6F4EE" />
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55" />
+
+      <!-- Axis labels -->
+      <text x="300" y="52" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace" text-anchor="middle" letter-spacing="0.12em">NOW · MARKET CLOSED</text>
+      <text x="560" y="52" fill="#176B5B" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace" text-anchor="middle" letter-spacing="0.12em">NEXT SESSION · 13:00–20:00 UTC</text>
+      <text x="850" y="52" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace" text-anchor="middle" letter-spacing="0.12em">DEADLINE</text>
+      <line x1="200" y1="64" x2="960" y2="64" stroke="#D8DDD5" stroke-width="1" />
+
+      <!-- Column guides -->
+      <line x1="420" y1="64" x2="420" y2="320" stroke="#D8DDD5" stroke-width="1" stroke-dasharray="3,4" />
+      <line x1="700" y1="64" x2="700" y2="320" stroke="#D8DDD5" stroke-width="1" stroke-dasharray="3,4" />
+      <line x1="960" y1="64" x2="960" y2="320" stroke="#B9C2BC" stroke-width="1.2" />
+
+      <!-- Row labels -->
+      <text x="20" y="112" fill="#172B2A" font-size="11" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif">Secondary sale</text>
+      <text x="20" y="126" fill="#7C8A85" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace">venue · 24/7</text>
+
+      <text x="20" y="168" fill="#172B2A" font-size="11" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif">Market Flow</text>
+      <text x="20" y="182" fill="#7C8A85" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace">issuer · 24/5</text>
+
+      <text x="20" y="224" fill="#172B2A" font-size="11" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif">xChange</text>
+      <text x="20" y="238" fill="#7C8A85" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace">issuer · ~60s</text>
+
+      <text x="20" y="280" fill="#172B2A" font-size="11" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif">xPort</text>
+      <text x="20" y="294" fill="#7C8A85" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace">shares · onboarding</text>
+
+      <!-- Bars -->
+      <rect x="200" y="104" width="760" height="24" rx="4" fill="rgba(23,107,91,0.10)" stroke="#176B5B" stroke-width="1" />
+      <text x="212" y="120" fill="#176B5B" font-size="9" font-family="'Geist Mono', ui-monospace, Menlo, monospace" letter-spacing="0.06em">QUOTED NOW · ESTIMATE, NOT A FILL</text>
+
+      <rect x="420" y="160" width="280" height="24" rx="4" fill="rgba(74,90,86,0.14)" stroke="#4A5A56" stroke-width="1" />
+      <text x="432" y="176" fill="#172B2A" font-size="9" font-family="'Geist Mono', ui-monospace, Menlo, monospace">session only</text>
+
+      <rect x="420" y="216" width="280" height="24" rx="4" fill="rgba(74,90,86,0.14)" stroke="#4A5A56" stroke-width="1" />
+      <text x="432" y="232" fill="#172B2A" font-size="9" font-family="'Geist Mono', ui-monospace, Menlo, monospace">session only</text>
+
+      <rect x="420" y="272" width="280" height="24" rx="4" fill="none" stroke="#4A5A56" stroke-width="1" stroke-dasharray="4,3" />
+      <text x="432" y="288" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, Menlo, monospace">session only + both onboardings</text>
+
+      <!-- Deadline tick -->
+      <text x="952" y="334" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, Menlo, monospace" text-anchor="end">2 sessions before it</text>
+
+      <!-- Note -->
+      <text x="20" y="360" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, Menlo, monospace">Bars show when a route can run, not a promise of settlement. Issuer terms are sourced and dated separately.</text>
+    </svg>
+  </div>
+</body>
+</html>

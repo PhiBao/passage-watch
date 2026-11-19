@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-arch-title pw-arch-desc" id="architecture-root">
+      <title id="pw-arch-title">Passage Watch architecture</title>
+      <desc id="pw-arch-desc">A browser holder talks to the Passage Watch Rust service on Fly.io, which reads identity and prices from CoinMarketCap, sell quotes from Jupiter and token units from a Solana RPC, caching results in process.</desc>
+      <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #architecture-root { --color-paper: #F6F4EE;
+      --color-ink: #172B2A;
+      --color-muted: #4A5A56;
+      --color-accent: #176B5B;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace; }
+      #architecture-root { font-family: var(--font-sans); color: var(--color-ink); }</style>
+        <pattern id="architecture-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="#172b2a" fill-opacity="0.10" />
+        </pattern>
+        <marker id="architecture-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4A5A56" /></marker>
+        <marker id="architecture-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#176B5B" /></marker>
+        <marker id="architecture-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2F5D7C" /></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#F6F4EE" />
+      <rect width="100%" height="100%" fill="url(#architecture-dots)" opacity="0.55" />
+
+      <!-- Zone: external data (drawn before arrows/nodes) -->
+      <rect x="600" y="40" width="260" height="360" rx="8" fill="#172b2a" fill-opacity="0.02" stroke="#172b2a" stroke-opacity="0.10" stroke-width="0.8" />
+      <rect x="664" y="44" width="132" height="12" rx="2" fill="#F6F4EE" />
+      <text x="730" y="53" fill="#172b2a" fill-opacity="0.45" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.14em">EXTERNAL DATA</text>
+
+      <!-- Arrows first -->
+      <line x1="180" y1="212" x2="250" y2="212" stroke="#2F5D7C" stroke-width="1.2" marker-end="url(#architecture-arrow-link)" />
+      <path d="M 355,150 V 96 Q 355,88 363,88 H 620" fill="none" stroke="#2F5D7C" stroke-width="1.2" marker-end="url(#architecture-arrow-link)" />
+      <line x1="460" y1="212" x2="620" y2="212" stroke="#176B5B" stroke-width="1.4" marker-end="url(#architecture-arrow-accent)" />
+      <path d="M 460,262 H 722 Q 730,262 730,270 V 300" fill="none" stroke="#2F5D7C" stroke-width="1.2" marker-end="url(#architecture-arrow-link)" />
+      <line x1="355" y1="270" x2="355" y2="306" stroke="#4A5A56" stroke-width="1.2" marker-end="url(#architecture-arrow)" />
+
+      <!-- Arrow labels -->
+      <rect x="188" y="194" width="54" height="12" rx="2" fill="#F6F4EE" />
+      <text x="215" y="203" fill="#2F5D7C" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">HTTPS</text>
+
+      <rect x="470" y="74" width="68" height="12" rx="2" fill="#F6F4EE" />
+      <text x="504" y="83" fill="#2F5D7C" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">IDENTITY</text>
+
+      <rect x="506" y="194" width="54" height="12" rx="2" fill="#F6F4EE" />
+      <text x="533" y="203" fill="#176B5B" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">QUOTE</text>
+
+      <rect x="556" y="250" width="52" height="12" rx="2" fill="#F6F4EE" />
+      <text x="582" y="259" fill="#2F5D7C" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">MINT</text>
+
+      <rect x="300" y="282" width="46" height="12" rx="2" fill="#F6F4EE" />
+      <text x="323" y="291" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">CACHE</text>
+
+      <!-- Node: Holder -->
+      <rect x="40" y="180" width="140" height="64" rx="6" fill="#F6F4EE" />
+      <rect x="40" y="180" width="140" height="64" rx="6" fill="#4a5a56" fill-opacity="0.10" stroke="#8A9A94" stroke-width="1" />
+      <rect x="48" y="188" width="28" height="12" rx="2" fill="none" stroke="#8a9a94" stroke-opacity="0.40" stroke-width="0.8" />
+      <text x="62" y="197" fill="#8A9A94" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="110" y="216" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Holder</text>
+      <text x="110" y="231" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">Browser</text>
+
+      <!-- Node: Passage Watch (focal) -->
+      <rect x="250" y="150" width="210" height="120" rx="6" fill="#F6F4EE" />
+      <rect x="250" y="150" width="210" height="120" rx="6" fill="#176b5b" fill-opacity="0.08" stroke="#176B5B" stroke-width="1.4" />
+      <rect x="258" y="158" width="34" height="12" rx="2" fill="none" stroke="#176b5b" stroke-opacity="0.45" stroke-width="0.8" />
+      <text x="275" y="167" fill="#176B5B" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="355" y="192" fill="#172B2A" font-size="13" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Passage Watch</text>
+      <text x="355" y="208" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">Axum · route engine</text>
+      <text x="355" y="222" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">static UI · scale to zero</text>
+
+      <!-- Node: Cache -->
+      <rect x="250" y="306" width="210" height="56" rx="6" fill="#F6F4EE" />
+      <rect x="250" y="306" width="210" height="56" rx="6" fill="#172b2a" fill-opacity="0.05" stroke="#8A9A94" stroke-width="1" />
+      <text x="355" y="330" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Cache + observations</text>
+      <text x="355" y="345" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">in process · 45s TTL</text>
+
+      <!-- Node: CoinMarketCap -->
+      <rect x="620" y="56" width="220" height="64" rx="6" fill="#F6F4EE" />
+      <rect x="620" y="56" width="220" height="64" rx="6" fill="#2f5d7c" fill-opacity="0.07" stroke="#2F5D7C" stroke-width="1" />
+      <rect x="628" y="64" width="34" height="12" rx="2" fill="none" stroke="#2f5d7c" stroke-opacity="0.40" stroke-width="0.8" />
+      <text x="645" y="73" fill="#2F5D7C" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="730" y="92" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">CoinMarketCap</text>
+      <text x="730" y="107" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">identity · prices · history</text>
+
+      <!-- Node: Jupiter -->
+      <rect x="620" y="180" width="220" height="64" rx="6" fill="#F6F4EE" />
+      <rect x="620" y="180" width="220" height="64" rx="6" fill="#2f5d7c" fill-opacity="0.07" stroke="#2F5D7C" stroke-width="1" />
+      <rect x="628" y="188" width="34" height="12" rx="2" fill="none" stroke="#2f5d7c" stroke-opacity="0.40" stroke-width="0.8" />
+      <text x="645" y="197" fill="#2F5D7C" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="730" y="216" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Jupiter Swap V2</text>
+      <text x="730" y="231" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">read-only sell quote</text>
+
+      <!-- Node: Solana RPC -->
+      <rect x="620" y="300" width="220" height="64" rx="6" fill="#F6F4EE" />
+      <rect x="620" y="300" width="220" height="64" rx="6" fill="#2f5d7c" fill-opacity="0.07" stroke="#2F5D7C" stroke-width="1" />
+      <rect x="628" y="308" width="34" height="12" rx="2" fill="none" stroke="#2f5d7c" stroke-opacity="0.40" stroke-width="0.8" />
+      <text x="645" y="317" fill="#2F5D7C" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle" letter-spacing="0.08em">RPC</text>
+      <text x="730" y="336" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Solana RPC</text>
+      <text x="730" y="351" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">mint · multiplier</text>
+
+      <!-- Legend -->
+      <rect x="40" y="410" width="440" height="28" rx="4" fill="#172b2a" fill-opacity="0.02" stroke="#172b2a" stroke-opacity="0.10" stroke-width="0.8" />
+      <line x1="54" y1="424" x2="82" y2="424" stroke="#2F5D7C" stroke-width="1.2" marker-end="url(#architecture-arrow-link)" />
+      <text x="90" y="427" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace">live API read</text>
+      <line x1="196" y1="424" x2="224" y2="424" stroke="#176B5B" stroke-width="1.4" marker-end="url(#architecture-arrow-accent)" />
+      <text x="232" y="427" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace">primary liquidity signal</text>
+      <line x1="376" y1="424" x2="404" y2="424" stroke="#4A5A56" stroke-width="1.2" marker-end="url(#architecture-arrow)" />
+      <text x="412" y="427" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace">in-process</text>
+    </svg>

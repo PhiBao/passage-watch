@@ -47,6 +47,16 @@ A destination switch changes the answer for a reason the user can understand: st
 
 The product never collapses these into one "redeemable" flag and never declares a global best route.
 
+### How one check runs
+
+![Five steps: choose or scan, resolve identity via CMC, verify units on Solana, quote the sell via Jupiter, then routes and exit window](docs/diagrams/check-pipeline.svg)
+
+### Why the exit window matters
+
+![Route availability: secondary sale any time, issuer routes only during the next US session, deadline after it](docs/diagrams/exit-window.svg)
+
+A token can be transferable while the process that turns it into cash or shares is closed. Passage shows **when each route can run** and how many NYSE sessions remain before your deadline — without claiming a settlement guarantee.
+
 ---
 
 ## Source boundaries
@@ -134,13 +144,7 @@ Passage reads the mint via Solana `getAccountInfo` with `jsonParsed`, selects th
 
 ## Architecture
 
-```text
-Browser (React)                      Rust service (Axum)
-  plan inputs (localStorage)   ->      CMC identity/price client (allow-listed, key server-side)
-  route comparison             <-      deterministic route engine + versioned evidence registry
-  change-since-saved diff      <-      Solana parsed-mint multiplier + read-only quote adapter
-                                      shared cache, quota-aware fetching
-```
+![Passage Watch architecture: one read-only Rust service on Fly, reading CoinMarketCap, Jupiter and Solana RPC](docs/diagrams/architecture.svg)
 
 - No user accounts; the holder's financial inputs stay in browser localStorage.
 - No wallet connection, signing, transactions or execution.

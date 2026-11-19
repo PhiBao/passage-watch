@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pw-pipe-title pw-pipe-desc" id="check-pipeline-root">
+      <title id="pw-pipe-title">How one Passage Watch check runs</title>
+      <desc id="pw-pipe-desc">Five steps from optional address scan through CoinMarketCap identity, Solana unit verification, Jupiter sell quote, to route and timeline evaluation with a recorded snapshot.</desc>
+      <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #check-pipeline-root { --color-paper: #F6F4EE;
+      --color-ink: #172B2A;
+      --color-muted: #4A5A56;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace; }
+      #check-pipeline-root { font-family: var(--font-sans); color: var(--color-ink); }</style>
+        <pattern id="check-pipeline-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="#172b2a" fill-opacity="0.10" />
+        </pattern>
+        <marker id="check-pipeline-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4A5A56" /></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#F6F4EE" />
+      <rect width="100%" height="100%" fill="url(#check-pipeline-dots)" opacity="0.55" />
+
+      <!-- Arrows first -->
+      <line x1="174" y1="150" x2="214" y2="150" stroke="#4A5A56" stroke-width="1.2" marker-end="url(#check-pipeline-arrow)" />
+      <line x1="378" y1="150" x2="418" y2="150" stroke="#4A5A56" stroke-width="1.2" marker-end="url(#check-pipeline-arrow)" />
+      <line x1="582" y1="150" x2="622" y2="150" stroke="#4A5A56" stroke-width="1.2" marker-end="url(#check-pipeline-arrow)" />
+      <line x1="786" y1="150" x2="826" y2="150" stroke="#4A5A56" stroke-width="1.2" marker-end="url(#check-pipeline-arrow)" />
+
+      <!-- Step 1 -->
+      <rect x="10" y="114" width="164" height="72" rx="6" fill="#F6F4EE" />
+      <rect x="10" y="114" width="164" height="72" rx="6" fill="#4a5a56" fill-opacity="0.08" stroke="#8A9A94" stroke-width="1" />
+      <text x="24" y="134" fill="#7C8A85" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" letter-spacing="0.14em">01</text>
+      <text x="92" y="152" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Choose / scan</text>
+      <text x="92" y="168" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">holding + goal</text>
+
+      <!-- Step 2 (focal) -->
+      <rect x="214" y="114" width="164" height="72" rx="6" fill="#F6F4EE" />
+      <rect x="214" y="114" width="164" height="72" rx="6" fill="#176b5b" fill-opacity="0.08" stroke="#176B5B" stroke-width="1.4" />
+      <text x="228" y="134" fill="#176B5B" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" letter-spacing="0.14em">02</text>
+      <text x="296" y="152" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Resolve identity</text>
+      <text x="296" y="168" fill="#176B5B" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">CMC · asset → issuer</text>
+
+      <!-- Step 3 -->
+      <rect x="418" y="114" width="164" height="72" rx="6" fill="#F6F4EE" />
+      <rect x="418" y="114" width="164" height="72" rx="6" fill="#2f5d7c" fill-opacity="0.07" stroke="#2F5D7C" stroke-width="1" />
+      <text x="432" y="134" fill="#2F5D7C" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" letter-spacing="0.14em">03</text>
+      <text x="500" y="152" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Verify units</text>
+      <text x="500" y="168" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">Solana mint · multiplier</text>
+
+      <!-- Step 4 -->
+      <rect x="622" y="114" width="164" height="72" rx="6" fill="#F6F4EE" />
+      <rect x="622" y="114" width="164" height="72" rx="6" fill="#2f5d7c" fill-opacity="0.07" stroke="#2F5D7C" stroke-width="1" />
+      <text x="636" y="134" fill="#2F5D7C" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" letter-spacing="0.14em">04</text>
+      <text x="704" y="152" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Quote the sell</text>
+      <text x="704" y="168" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">Jupiter · token → USDC</text>
+
+      <!-- Step 5 -->
+      <rect x="826" y="114" width="164" height="72" rx="6" fill="#F6F4EE" />
+      <rect x="826" y="114" width="164" height="72" rx="6" fill="#172b2a" fill-opacity="0.05" stroke="#8A9A94" stroke-width="1" />
+      <text x="840" y="134" fill="#7C8A85" font-size="7" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" letter-spacing="0.14em">05</text>
+      <text x="908" y="152" fill="#172B2A" font-size="12" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Routes + window</text>
+      <text x="908" y="168" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">engine · calendar</text>
+
+      <!-- Snapshot callout -->
+      <path d="M 908,186 V 226" fill="none" stroke="#4A5A56" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#check-pipeline-arrow)" />
+      <rect x="826" y="232" width="164" height="40" rx="4" fill="#F6F4EE" stroke="#D8DDD5" stroke-width="1" />
+      <text x="908" y="250" fill="#172B2A" font-size="10" font-weight="600" font-family="'Geist', 'Helvetica Neue', Arial, sans-serif" text-anchor="middle">Snapshot recorded</text>
+      <text x="908" y="263" fill="#4A5A56" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" text-anchor="middle">change since saved</text>
+
+      <!-- Annotation -->
+      <text x="10" y="300" fill="#4A5A56" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace">Read-only at every step: no signing, no transfer, no redemption.</text>
+      <text x="10" y="318" fill="#7C8A85" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace">Identity and prices come from CMC; units from the mint; the quote from Jupiter; route terms are separately sourced and dated.</text>
+    </svg>
