@@ -429,6 +429,10 @@ async fn timeline(
     };
     let routes: Vec<RouteResult> = engine::evaluate(&ctx, SimpleDate::new(now.year, now.month, now.day));
 
+    let today_naive = chrono::NaiveDate::from_ymd_opt(now.year, now.month, now.day).unwrap_or(chrono::NaiveDate::MIN);
+    let deadline_naive = chrono::NaiveDate::parse_from_str(&deadline_str, "%Y-%m-%d").unwrap_or(today_naive);
+    let sessions_before_deadline = passage_watch::calendar::count_sessions_between(today_naive, deadline_naive);
+
     Ok(Json(json!({
         "token_symbol": q.token_symbol,
         "checked_at": now.iso,
@@ -437,6 +441,7 @@ async fn timeline(
         "deadline": deadline_str,
         "deadline_iso": deadline.to_rfc3339(),
         "deadline_after_next_session_open": next_session.as_ref().map_or(false, |ns| deadline_dt(ns) > now_dt),
+        "sessions_before_deadline": sessions_before_deadline,
         "routes": routes,
     })))
 }

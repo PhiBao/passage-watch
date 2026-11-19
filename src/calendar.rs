@@ -76,6 +76,21 @@ pub fn next_session(from: chrono::DateTime<chrono::Utc>) -> Option<(String, Stri
     None
 }
 
+/// Counts regular NYSE session days from `from` (inclusive) to `to` (inclusive).
+/// Used for the exit-window timeline: "N trading sessions before your deadline".
+pub fn count_sessions_between(from: chrono::NaiveDate, to: chrono::NaiveDate) -> usize {
+    let mut count = 0usize;
+    let mut day = from;
+    while day <= to {
+        let dow = day.weekday().number_from_monday();
+        if (1..=5).contains(&dow) && !is_usdst_holiday(day.year(), day.month() as u32, day.day()) {
+            count += 1;
+        }
+        day = day + chrono::Duration::days(1);
+    }
+    count
+}
+
 pub fn session_is_open(year: i32, month: u32, day: u32, weekday: u32, hour: u32) -> bool {
     if !(1..=5).contains(&weekday) {
         return false;

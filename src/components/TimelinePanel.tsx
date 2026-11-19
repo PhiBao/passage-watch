@@ -49,6 +49,9 @@ export default function TimelinePanel({ timeline, changes }: {
         <div>
           <h4>Deadline</h4>
           <p>{timeline.deadline}</p>
+          <p className="deadline-note">
+            {timeline.sessions_before_deadline} NYSE session{timeline.sessions_before_deadline === 1 ? '' : 's'} remain before it
+          </p>
         </div>
         <div>
           <h4>Route relevance</h4>

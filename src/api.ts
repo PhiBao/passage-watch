@@ -84,6 +84,7 @@ export interface Timeline {
   deadline: string
   deadline_iso: string
   deadline_after_next_session_open: boolean
+  sessions_before_deadline: number
   routes: TimelineRoute[]
 }
 
