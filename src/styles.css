@@ -112,6 +112,17 @@ code { font-family: var(--mono); font-size: 0.92em; background: rgba(23,43,42,0.
 .route-sources summary { cursor: pointer; color: var(--action); }
 .route-sources a { word-break: break-all; font-size: 11px; }
 
+.timeline-panel { border: 1px solid var(--rule); background: #fff; border-radius: 4px; padding: 18px; margin-top: 20px; }
+.timeline-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.timeline-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; margin-top: 12px; }
+.timeline-grid h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 6px; }
+.timeline-grid p { font-size: 13px; color: #33423f; margin: 0; }
+.deadline-note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.change-history { margin-top: 16px; }
+.change-history h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.change-row { padding: 6px 0; border-bottom: 1px solid var(--rule); }
+.change-label { display: block; font-size: 13px; }
+.change-time { display: block; font-size: 11px; color: var(--muted); }
 /* Evidence */
 .evidence-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 .evidence-grid h3 { font-size: 15px; margin: 0 0 10px; }

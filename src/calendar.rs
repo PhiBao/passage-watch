@@ -6,7 +6,10 @@
 
 use std::collections::HashSet;
 
-/// NYSE regular session: weekdays, 13:30–20:00 UTC (9:30 AM–4:00 PM ET).
+use chrono::Datelike;
+
+/// NYSE regular session, in UTC hours: open 13:00, close 20:00.
+/// (Approximation for display — actual NYSE runs 9:30 AM–4:00 PM ET.)
 const SESSION_START_HOUR_UTC: u32 = 13;
 const SESSION_END_HOUR_UTC: u32 = 20;
 
@@ -44,6 +47,35 @@ pub fn is_usdst_holiday(year: i32, month: u32, day: u32) -> bool {
 }
 
 /// Returns true if the given UTC datetime is a regular NYSE session.
+/// Returns the NYSE session window containing `from`, or the next upcoming
+/// session, as (open_utc, close_utc) ISO strings. `from` is UTC.
+pub fn next_session(from: chrono::DateTime<chrono::Utc>) -> Option<(String, String)> {
+    let mut day = from.date_naive();
+    for _ in 0..366 * 10 {
+        let dow = day.weekday().number_from_monday(); // 1=Mon..7=Sun
+        // Session days are weekdays 1..=5 (Mon..Fri).
+        if (1..=5).contains(&dow) && !is_usdst_holiday(day.year(), day.month() as u32, day.day()) {
+            let open = chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+                chrono::NaiveDateTime::new(day, chrono::NaiveTime::from_hms_opt(13, 0, 0).expect("valid")),
+                chrono::Utc,
+            );
+            let close = chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+                chrono::NaiveDateTime::new(day, chrono::NaiveTime::from_hms_opt(20, 0, 0).expect("valid")),
+                chrono::Utc,
+            );
+            // The session containing `from` if `from` is in-session, or the
+            // next session if `from` precedes it. We pick the first session
+            // whose close is after `from`.
+            if from < close {
+                return Some((open.to_rfc3339(), close.to_rfc3339()));
+            }
+            // else: session already closed before `from`; try next day
+        }
+        day = day + chrono::Duration::days(1);
+    }
+    None
+}
+
 pub fn session_is_open(year: i32, month: u32, day: u32, weekday: u32, hour: u32) -> bool {
     if !(1..=5).contains(&weekday) {
         return false;

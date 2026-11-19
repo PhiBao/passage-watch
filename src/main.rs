@@ -30,6 +30,7 @@ struct AppState {
     rpc: Arc<SolanaRpc>,
     http: reqwest::Client,
     cache: Arc<passage_watch::cache::Cache>,
+    monitor: Arc<passage_watch::monitor::MonitorStore>,
 }
 
 #[tokio::main]
@@ -44,12 +45,27 @@ async fn main() {
         .timeout(Duration::from_secs(10))
         .build()
         .expect("http client");
+    let cmc = Arc::new(CmcClient::new(&config));
+    let monitor = Arc::new(passage_watch::monitor::MonitorStore::new());
     let state = AppState {
-        cmc: Arc::new(CmcClient::new(&config)),
+        cmc: cmc.clone(),
         rpc: Arc::new(SolanaRpc::default()),
-        http,
+        http: http.clone(),
         cache: Arc::new(passage_watch::cache::Cache::new(Duration::from_secs(45))),
+        monitor: monitor.clone(),
     };
+
+    // Background exit-readiness monitor (read-only).
+    {
+        let state = state.clone();
+        tokio::spawn(passage_watch::monitor::monitor_worker(
+            state.cmc.clone(),
+            state.http.clone(),
+            state.rpc.clone(),
+            state.cache.clone(),
+            state.monitor.clone(),
+        ));
+    }
 
     let app = Router::new()
         .route("/health", get(health))
@@ -59,6 +75,8 @@ async fn main() {
         .route("/api/v1/check", get(check))
         .route("/api/v1/method", get(method))
         .route("/api/v1/observations/:id", get(observations))
+        .route("/api/v1/changes/:token_symbol", get(changes))
+        .route("/api/v1/timeline", get(timeline))
         .fallback(static_files)
         .with_state(state);
 
@@ -161,6 +179,21 @@ async fn instrument(
             StatusCode::NOT_FOUND,
             Json(json!({ "error": "instrument not found" })),
         ))
+}
+
+#[derive(Debug, Deserialize)]
+struct TimelineQuery {
+    token_symbol: String,
+    #[serde(default)]
+    destination: Option<Destination>,
+    #[serde(default)]
+    quantity: Option<f64>,
+    deadline: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SinceQuery {
+    since_iso: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -321,6 +354,97 @@ async fn observations(
         })
         .collect();
     Ok(Json(json!({ "crypto_id": id, "points": points })))
+}
+
+/// Exit-window timeline for a plan: now, next NYSE session, and the deadline.
+async fn timeline(
+    State(s): State<AppState>,
+    Query(q): Query<TimelineQuery>,
+) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
+    let cat = s.cmc.catalog().await.map_err(|e| (StatusCode::BAD_GATEWAY, Json(json!({ "error": e.to_string() }))))?;
+    let Some(instrument) = cat.iter().find(|i| i.token_symbol == q.token_symbol) else {
+        return Err((StatusCode::NOT_FOUND, Json(json!({ "error": "instrument not found" }))));
+    };
+
+    let deadline = chrono::NaiveDate::parse_from_str(&q.deadline, "%Y-%m-%d")
+        .map_err(|_| (StatusCode::BAD_REQUEST, Json(json!({ "error": "deadline must be YYYY-MM-DD" }))))
+        .map(|d| d.and_hms_opt(0, 0, 0).expect("midnight"))
+        .map(|nd| nd.and_local_timezone(chrono::Utc).single().unwrap_or_else(|| chrono::Utc::now()))?;
+
+    let now = chrono_like_now();
+    let now_dt = chrono::Utc::now();
+    let market_open_now = passage_watch::calendar::session_is_open(now.year, now.month, now.day, now.weekday, now.hour);
+    let next_session = passage_watch::calendar::next_session(now_dt).map(|(o, c)| json!({ "open": o, "close": c }));
+    let deadline_str = q.deadline.clone();
+
+    let mut instrument2 = instrument.clone();
+    if let Ok(Some(c)) = s.cmc.contract_for(instrument.crypto_id).await {
+        instrument2.contract = c;
+    }
+    let mut has_quote = false;
+    if !instrument2.contract.is_empty() {
+        let mint_key = format!("mint:{}", instrument2.contract);
+        let cfg = passage_watch::cache::get_or_load(&s.cache, &mint_key, || {
+            let rpc = s.rpc.clone();
+            let m = instrument2.contract.clone();
+            async move { rpc.scaled_ui_config(&m).await.map_err(|e| e.to_string()).map(|c| serde_json::to_string(&c).expect("ser")) }
+        })
+        .await;
+        if let Ok(json) = cfg {
+            if let Ok(unit) = serde_json::from_str::<passage_watch::unit::ScaledUiConfig>(&json) {
+                instrument2.unit_basis = passage_watch::model::UnitBasis::Verified;
+                let sq = sell_quote_usdc(&s.http, SellInput {
+                    token_symbol: &instrument2.token_symbol,
+                    token_mint: &instrument2.contract,
+                    quantity_displayed: q.quantity.unwrap_or(1.0),
+                    unit,
+                    cmc_observed_price_per_share: instrument2.observed_price_usd,
+                }, &now.iso).await;
+                has_quote = sq.usdc_amount.is_some();
+            }
+        }
+    }
+    let quantity = q.quantity.unwrap_or(1.0);
+    let ctx = PlanContext {
+        instrument: instrument2,
+        quantity,
+        destination: q.destination.unwrap_or(Destination::UsdcSolana),
+        deadline: deadline_str.clone(),
+        issuer_onboarding: Onboarding::Unknown,
+        broker_onboarding: Onboarding::Unknown,
+        market_session: if market_open_now { MarketSession::UsMarketOpen } else { MarketSession::UsMarketClosed },
+        has_secondary_quote: has_quote,
+        quote_output_amount: if has_quote { None } else { None },
+        quote_expired: false,
+        evidence_reviewed_at: now.iso.clone(),
+    };
+    let routes: Vec<RouteResult> = engine::evaluate(&ctx, SimpleDate::new(now.year, now.month, now.day));
+
+    Ok(Json(json!({
+        "token_symbol": q.token_symbol,
+        "checked_at": now.iso,
+        "market_open_now": market_open_now,
+        "next_session": next_session,
+        "deadline": deadline_str,
+        "deadline_iso": deadline.to_rfc3339(),
+        "deadline_after_next_session_open": next_session.as_ref().map_or(false, |ns| deadline_dt(ns) > now_dt),
+        "routes": routes,
+    })))
+}
+
+fn deadline_dt(ns: &serde_json::Value) -> chrono::DateTime<chrono::Utc> {
+    ns.get("open").and_then(|x| x.as_str()).and_then(|s| chrono::DateTime::parse_from_rfc3339(s).ok())
+        .map(|dt| dt.with_timezone(&chrono::Utc))
+        .unwrap_or_else(chrono::Utc::now)
+}
+
+/// Change history: snapshots for `token_symbol` after `since_iso`.
+async fn changes(
+    State(s): State<AppState>,
+    Path(token_symbol): Path<String>,
+    Query(q): Query<SinceQuery>,
+) -> Json<Value> {
+    Json(json!({ "token_symbol": token_symbol, "changes": s.monitor.changes_for(&token_symbol, q.since_iso.as_deref()) }))
 }
 
 async fn method() -> Json<Value> {

@@ -16,6 +16,7 @@ pub mod config;
 pub mod date;
 pub mod engine;
 pub mod evidence;
+pub mod monitor;
 pub mod model;
 pub mod route;
 pub mod rpc;

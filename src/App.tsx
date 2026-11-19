@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import PlanForm from './components/PlanForm'
 import RouteCard from './components/RouteCard'
+import TimelinePanel from './components/TimelinePanel'
 import EvidencePanel from './components/EvidencePanel'
-import { fetchCatalog, fetchMethod, fetchObservations, runCheck } from './api'
+import { fetchCatalog, fetchChanges, fetchMethod, fetchObservations, fetchTimeline, runCheck } from './api'
 import { isUsdstHolidayDate, marketSessionFromCheck } from './session'
-import type { ObservationPoint } from './api'
+import type { ObservationPoint, Timeline, ChangeEntry } from './api'
 import type {
   CheckResult,
   Destination,
@@ -40,6 +41,9 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [savedPlan, setSavedPlan] = useState<PlanRecord | null>(loadSaved)
   const [observations, setObservations] = useState<ObservationPoint[]>([])
+  const [timeline, setTimeline] = useState<Timeline | null>(null)
+  const [changes, setChanges] = useState<ChangeEntry[]>([])
+  const selectedInstrument = instruments.find((i) => i.crypto_id === selectedId)
 
   useEffect(() => {
     fetchCatalog()
@@ -72,6 +76,18 @@ export default function App() {
       const [res, obs] = await Promise.all([runCheck(input), fetchObservations(input.crypto_id)])
       setResult(res)
       setObservations(obs.points.filter((p) => p.price_usd != null))
+
+      // Exit-window timeline + change history (best-effort; read-only).
+      const tokenSymbol = selectedInstrument?.token_symbol
+      if (tokenSymbol) {
+        const deadline = input.deadline || new Date().toISOString().slice(0, 10)
+        const [tl, ch] = await Promise.all([
+          fetchTimeline(tokenSymbol, deadline, input.destination).catch(() => null),
+          fetchChanges(tokenSymbol, savedPlan?.saved_at).catch(() => null),
+        ])
+        setTimeline(tl)
+        setChanges(ch?.changes ?? [])
+      }
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -204,6 +220,8 @@ export default function App() {
             <div className="route-grid">
               {result.routes.map((route) => <RouteCard key={route.kind} route={route} />)}
             </div>
+
+            <TimelinePanel timeline={timeline} changes={changes} />
           </section>
         )}
 

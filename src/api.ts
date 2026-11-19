@@ -1,5 +1,6 @@
 import type {
   CheckResult,
+  Destination,
   Instrument,
   PlanInput,
 } from './types'
@@ -53,4 +54,38 @@ export interface ObservationPoint {
 
 export function fetchObservations(cryptoId: number): Promise<{ points: ObservationPoint[] }> {
   return getJson(`/api/v1/observations/${cryptoId}`)
+}
+
+export interface ChangeEntry {
+  at_iso: string
+  price_usd: number | null
+  usdc_at_monitor_size: number | null
+  quote_error: string | null
+}
+
+export function fetchChanges(tokenSymbol: string, sinceIso?: string): Promise<{ token_symbol: string; changes: ChangeEntry[] }> {
+  const q = new URLSearchParams()
+  if (sinceIso) q.set('since_iso', sinceIso)
+  return getJson(`/api/v1/changes/${tokenSymbol}${q.toString() ? `?${q.toString()}` : ''}`)
+}
+
+export interface TimelineRoute {
+  kind: string
+  applicable: boolean
+  evidence_state: string
+}
+
+export interface Timeline {
+  token_symbol: string
+  checked_at: string
+  market_open_now: boolean
+  next_session: { open: string; close: string } | null
+  deadline: string
+  deadline_iso: string
+  deadline_after_next_session_open: boolean
+  routes: TimelineRoute[]
+}
+
+export function fetchTimeline(tokenSymbol: string, deadline: string, destination: Destination): Promise<Timeline> {
+  return getJson(`/api/v1/timeline?${new URLSearchParams({ token_symbol: tokenSymbol, destination, deadline })}`)
 }
