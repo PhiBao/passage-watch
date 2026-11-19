@@ -180,6 +180,32 @@ impl CmcClient {
         Ok(instruments)
     }
 
+    /// Batched contract resolution: one call returns Solana contract per crypto_id.
+    pub async fn contracts_for(&self, ids: &[String]) -> Result<std::collections::HashMap<u64, String>, CmcError> {
+        let joined = ids.join(",");
+        let (_, data): (_, serde_json::Value) = self
+            .get("/v2/cryptocurrency/info", &[("id", joined)])
+            .await?;
+        let mut out = std::collections::HashMap::new();
+        if let Some(obj) = data.as_object() {
+            for (id_str, entry) in obj {
+                if let Ok(id) = id_str.parse::<u64>() {
+                    let found = entry
+                        .get("contract_address")
+                        .and_then(|v| v.as_array())
+                        .and_then(|list| list.iter().find_map(|it| {
+                            let plat = it.get("platform").and_then(|p| p.get("name")).and_then(|v| v.as_str());
+                            if plat.map_or(false, |p| p.eq_ignore_ascii_case("solana")) {
+                                it.get("contract_address").and_then(|v| v.as_str().map(String::from))
+                            } else { None }
+                        }));
+                    if let Some(c) = found { out.insert(id, c); }
+                }
+            }
+        }
+        Ok(out)
+    }
+
     pub async fn contract_for(&self, crypto_id: u64) -> Result<Option<String>, CmcError> {
         let (_, data): (_, serde_json::Value) = self
             .get("/v2/cryptocurrency/info", &[("id", crypto_id.to_string())])

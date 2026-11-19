@@ -76,6 +76,7 @@ async fn main() {
         .route("/api/v1/method", get(method))
         .route("/api/v1/observations/:id", get(observations))
         .route("/api/v1/changes/:token_symbol", get(changes))
+        .route("/api/v1/address/:wallet", get(address))
         .route("/api/v1/timeline", get(timeline))
         .fallback(static_files)
         .with_state(state);
@@ -436,6 +437,37 @@ fn deadline_dt(ns: &serde_json::Value) -> chrono::DateTime<chrono::Utc> {
     ns.get("open").and_then(|x| x.as_str()).and_then(|s| chrono::DateTime::parse_from_rfc3339(s).ok())
         .map(|dt| dt.with_timezone(&chrono::Utc))
         .unwrap_or_else(chrono::Utc::now)
+}
+
+/// Scan a Solana address (read-only) and return Backed instruments it holds,
+/// with token balances. We never connect the address to an account or sign.
+async fn address(State(s): State<AppState>, Path(wallet): Path<String>) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
+    if wallet.is_empty() || wallet.len() > 44 {
+        return Err((StatusCode::BAD_REQUEST, Json(json!({ "error": "invalid Solana address" }))));
+    }
+    let cat = s.cmc.catalog().await.map_err(|e| (StatusCode::BAD_GATEWAY, Json(json!({ "error": e.to_string() }))))?;
+    let holdings = s.rpc.wallet_holdings(&wallet).await.map_err(|e| (StatusCode::BAD_GATEWAY, Json(json!({ "error": e.to_string() }))))?;
+    // Match by token mint — contracts are resolved in a single batched CMC call.
+    let ids: Vec<String> = cat.iter().map(|i| i.crypto_id.to_string()).collect();
+    let contracts = s.cmc.contracts_for(&ids).await.map_err(|e| (StatusCode::BAD_GATEWAY, Json(json!({ "error": e.to_string() }))))?;
+    let mut found: Vec<Value> = cat
+        .iter()
+        .filter_map(|i| {
+            let c = contracts.get(&i.crypto_id)?;
+            let b = holdings.get(c)?;
+            if *b <= 0.0 { return None; }
+            Some(json!({
+                "token_symbol": i.token_symbol, "crypto_id": i.crypto_id,
+                "underlying": i.underlying, "balance": b, "contract": c, "issuer": i.issuer,
+            }))
+        })
+        .collect();
+    found.sort_by(|a, b| {
+        let ab = b["balance"].as_f64().unwrap_or(0.0);
+        let bb = a["balance"].as_f64().unwrap_or(0.0);
+        ab.partial_cmp(&bb).unwrap_or(std::cmp::Ordering::Equal)
+    });
+    Ok(Json(json!({ "wallet": wallet, "instruments": found })))
 }
 
 /// Change history: snapshots for `token_symbol` after `since_iso`.

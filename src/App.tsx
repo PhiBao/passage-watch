@@ -4,9 +4,10 @@ import PlanForm from './components/PlanForm'
 import RouteCard from './components/RouteCard'
 import TimelinePanel from './components/TimelinePanel'
 import EvidencePanel from './components/EvidencePanel'
-import { fetchCatalog, fetchChanges, fetchMethod, fetchObservations, fetchTimeline, runCheck } from './api'
+import { fetchAddressHoldings, fetchCatalog, fetchChanges, fetchMethod, fetchObservations, fetchTimeline, runCheck } from './api'
 import { isUsdstHolidayDate, marketSessionFromCheck } from './session'
 import type { ObservationPoint, Timeline, ChangeEntry } from './api'
+import { verdict as computeVerdict } from './verdict'
 import type {
   CheckResult,
   Destination,
@@ -36,6 +37,7 @@ export default function App() {
   const [issuerOnboarding, setIssuerOnboarding] = useState<Onboarding>('unknown')
   const [brokerOnboarding, setBrokerOnboarding] = useState<Onboarding>('unknown')
   const [result, setResult] = useState<CheckResult | null>(null)
+  const [verdictText, setVerdictText] = useState<string | null>(null)
   const [method, setMethod] = useState<{ endpoints: string[]; rule_version: string } | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -43,6 +45,8 @@ export default function App() {
   const [observations, setObservations] = useState<ObservationPoint[]>([])
   const [timeline, setTimeline] = useState<Timeline | null>(null)
   const [changes, setChanges] = useState<ChangeEntry[]>([])
+  const [addressInput, setAddressInput] = useState('')
+  const [importStatus, setImportStatus] = useState('')
   const selectedInstrument = instruments.find((i) => i.crypto_id === selectedId)
 
   useEffect(() => {
@@ -75,6 +79,7 @@ export default function App() {
     try {
       const [res, obs] = await Promise.all([runCheck(input), fetchObservations(input.crypto_id)])
       setResult(res)
+      setVerdictText(computeVerdict(res))
       setObservations(obs.points.filter((p) => p.price_usd != null))
 
       // Exit-window timeline + change history (best-effort; read-only).
@@ -117,6 +122,26 @@ export default function App() {
     setSavedPlan(null)
   }
 
+  async function onImportAddress() {
+    const addr = addressInput.trim()
+    if (!addr) return
+    setImportStatus('Scanning address…')
+    try {
+      const res = await fetchAddressHoldings(addr)
+      const h = res.instruments[0]
+      const inst = instruments.find((i) => i.token_symbol === h.token_symbol)
+      if (h && inst) {
+        setSelectedId(inst.crypto_id)
+        setQuantity(String(h.balance))
+        setImportStatus(`✓ Imported ${h.token_symbol} (${h.balance} units).`)
+      } else {
+        setImportStatus('No supported tokenized-stock holdings found in this address.')
+      }
+    } catch (e) {
+      setImportStatus((e as Error).message)
+    }
+  }
+
   return (
     <div className="app-shell">
       <Header />
@@ -134,6 +159,21 @@ export default function App() {
 
         <section className="workbench">
           <h2 className="section-title">Plan an exit</h2>
+          <div className="address-row">
+            <label htmlFor="address">Optional: from your wallet (read-only)</label>
+            <div className="address-input-group">
+              <input
+                id="address"
+                type="text"
+                placeholder="Paste a Solana address to scan holdings"
+                value={addressInput}
+                onChange={(e) => setAddressInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') onImportAddress() }}
+              />
+              <button className="secondary-action" onClick={onImportAddress}>Scan holdings</button>
+            </div>
+            {importStatus && <span className={`import-status ${/✓|No supported|prefer/.test(importStatus) ? 'ok' : 'warn'}`}>{importStatus}</span>}
+          </div>
           <PlanForm
             instruments={instruments}
             selectedId={selectedId}
@@ -169,6 +209,16 @@ export default function App() {
                 {savedPlan && <button className="text-action" onClick={onClear}>Clear saved plan</button>}
               </div>
             </div>
+
+            {verdictText && (
+              <div className="verdict-card">
+                <div className="verdict-label">
+                  <span>What this plan tells you</span>
+                  <span className="verdict-coverage">{instruments.length} instruments in catalog</span>
+                </div>
+                <p className="verdict-text">{verdictText}</p>
+              </div>
+            )}
 
             {result.quote && (
               <div className="quote-strip">

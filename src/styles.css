@@ -112,6 +112,21 @@ code { font-family: var(--mono); font-size: 0.92em; background: rgba(23,43,42,0.
 .route-sources summary { cursor: pointer; color: var(--action); }
 .route-sources a { word-break: break-all; font-size: 11px; }
 
+.address-row { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
+.address-row label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.address-input-group { display: flex; gap: 8px; }
+.address-input-group input { flex: 1; min-width: 0; }
+.address-input-group .secondary-action { white-space: nowrap; }
+.import-status { font-size: 12px; display: block; }
+.import-status.ok { color: var(--action); }
+.import-status.warn { color: var(--caution); }
+
+.verdict-card { border: 1px solid var(--rule); background: #fff; border-radius: 4px; padding: 16px 18px; margin: 20px 0 18px; }
+.verdict-label { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.verdict-label span:first-child { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.verdict-coverage { font-size: 11px; color: var(--action); font-weight: 700; white-space: nowrap; }
+.verdict-text { font-size: 15px; color: #33423f; margin: 0; line-height: 1.6; }
+
 .timeline-panel { border: 1px solid var(--rule); background: #fff; border-radius: 4px; padding: 18px; margin-top: 20px; }
 .timeline-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .timeline-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; margin-top: 12px; }

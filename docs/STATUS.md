@@ -9,9 +9,10 @@ Phase 0–2 delivered: correct sell-side Jupiter quote, living CMC catalog (146 
 - **Phase 0 — Correctness:** sell-side Jupiter quote now correctly sells tokens → USDC (verified live: $26,543 USDC for 75 AAPLX). Correct Solana scaled-UI multiplier/decimals handling via `jsonParsed` RPC. NYSE calendar for session display; server caches for CMC catalog/contract/multiplier and Jupiter quotes. `src/unit.rs` conversion round-trips.
 - **Phase 1 — Living CMC catalog:** 146 Backed instruments discovered from `/v5/real-world-assets/map` + `quotes/latest`. Contracts resolved per-token via `/v2/cryptocurrency/info`. Contracts + unit verified at `check` time.
 - **Phase 2 — Timeline + monitoring:** `/api/v1/timeline` shows market status, next session, deadline, and route statuses (SECONDARY_SALE: quoted). Background worker snapshots price + standard-size sell quote every 60s into an in-memory ring; `/api/v1/changes/:symbol` exposes changes since a saved time. Verified live: changes for AAPLX; check = $26,543.
+- **Phase 3 — User-input improvements:** Read-only address scan (`GET /api/v1/address/:wallet`) returns Backed tokens the wallet holds with balances (no signing). Frontend "Import holding" prefills from your wallet. Verdict panel shows what the plan tells you. Catalog coverage count in results.
 - Deterministic route engine with explicit states (no "best route" verdict).
 - Versioned evidence registry with freshness/staleness.
-- Frontend: plan form, destination switch, route cards, timeline panel, changes panel, evidence panel, observation history, localStorage saved-plan diff.
+- Frontend: plan form, destination switch, route cards, timeline panel, changes panel, evidence panel, observation history, localStorage saved-plan diff, verdict card, address import.
 
 ## Verified end-to-end
 

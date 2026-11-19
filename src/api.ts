@@ -89,3 +89,16 @@ export interface Timeline {
 export function fetchTimeline(tokenSymbol: string, deadline: string, destination: Destination): Promise<Timeline> {
   return getJson(`/api/v1/timeline?${new URLSearchParams({ token_symbol: tokenSymbol, destination, deadline })}`)
 }
+
+export interface Holding {
+  token_symbol: string
+  crypto_id: number
+  underlying: string
+  balance: number
+  contract: string
+  issuer: string
+}
+
+export function fetchAddressHoldings(address: string): Promise<{ wallet: string; instruments: Holding[] }> {
+  return getJson(`/api/v1/address/${address}`)
+}

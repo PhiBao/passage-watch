@@ -39,7 +39,12 @@ Build the next product version of Passage Watch: a **tokenized-stock exit readin
 15. `/api/v1/changes/:token_symbol?since_iso=` — change history vs a saved plan.
 16. UI: exit-window timeline panel, change history, route statuses.
 
-Notes: monitor storage is in-memory (300 snapshots) — acceptable MVP.
+## Phase 3 — User-input improvements (in progress)
+
+17. **Address import:** `GET /api/v1/address/:wallet` scans a Solana address read-only via `getTokenAccountsByOwner` + parsed `getAccountInfo`, matches to Backed tokens, returns holdings + balances.
+18. **Readiness verdict:** results panel shows what the plan tells you (sell amount, preps, spread).
+19. **Coverage count:** plan form shows catalog size (live CMC count).
+20. **Near-market-open refinement:** timeline shows route statuses + deadline relation; refine if judge flow misses key cases.
 
 ## What NOT to do
 
