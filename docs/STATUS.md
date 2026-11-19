@@ -11,6 +11,7 @@ Phase 0–2 delivered: correct sell-side Jupiter quote, living CMC catalog (146 
 - **Phase 2 — Timeline + monitoring:** `/api/v1/timeline` shows market status, next session, deadline, and route statuses (SECONDARY_SALE: quoted). Background worker snapshots price + standard-size sell quote every 60s into an in-memory ring; `/api/v1/changes/:symbol` exposes changes since a saved time. Verified live: changes for AAPLX; check = $26,543.
 - **Phase 3 — User-input improvements:** Read-only address scan (`GET /api/v1/address/:wallet`) returns Backed tokens the wallet holds with balances (no signing). Frontend "Import holding" prefills from your wallet. Verdict panel shows what the plan tells you. Catalog coverage count in results.
 - **Phase 3b — strength:** liquidity-at-size quotes (25/50/100% of holding), SVG price sparkline from real CMC daily quotes, and multi-holding address import (chips to pick a holding).
+- **Phase 4 — Trading-terminal skin:** dark monospaced frontend (self-hosted JetBrains Mono, OFL) with a sticky status bar (live UTC clock, NYSE badge), a scrolling ticker tape of every catalog price, a 46px quote-board readout, depth-bar liquidity ladder, and `[ QUOTED ]`-style route chips. DOM text and all automation selectors unchanged; AA contrast verified.
 - Deterministic route engine with explicit states (no "best route" verdict).
 - Versioned evidence registry with freshness/staleness.
 - Frontend: plan form, destination switch, route cards, timeline panel, changes panel, evidence panel, sparkline, size-liquidity table, localStorage saved-plan diff, verdict card, address import.
@@ -28,6 +29,5 @@ Phase 0–2 delivered: correct sell-side Jupiter quote, living CMC catalog (146 
 ## Next (remaining for submission)
 
 - Note: monitor ring is in-memory (300 snapshots/global); acceptable for MVP but consider moving to SQLite later.
-- Record the 3-minute demo video (port 3317 locally, or the deployed URL).
 - Confirm Jupiter keyless display terms and rate limits.
 - Final submission rehearsal: public repo, DoraHacks build, X post with `#BuildwithCMC`.

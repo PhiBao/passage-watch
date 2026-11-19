@@ -4,6 +4,8 @@ Record this against the deployed app or `http://localhost:3000`. Everything show
 
 ## 0:00–0:20 — Frame the decision
 
+Open the app and let the status bar sit for a beat: the UTC clock ticks, the NYSE badge shows the live session state, and the tape carries every catalog instrument's current CMC price.
+
 > "A tokenized stock is a wrapper. Before you act, two questions matter: what does it actually become — cash or shares — and can that happen before your deadline? Passage Watch answers that with live data."
 
 ## 0:20–0:50 — Pick the holding

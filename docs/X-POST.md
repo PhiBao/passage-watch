@@ -43,7 +43,7 @@ build: <DORAHAKES_URL>
 
 ## Alt text for the attached still
 
-> Passage Watch planning an exit for 75 AAPLX into USDC: verdict card with the live sell quote and per-share comparison, liquidity at 25, 50 and 100 percent of the position, route cards, and an exit window showing the next US session.
+> Passage Watch, a dark trading-terminal interface, planning an exit for 75 AAPLX into USDC: sticky status bar with a live UTC clock and an NYSE session badge, a scrolling tape of catalog prices, a quote board showing the live sell quote, a liquidity ladder at 25/50/100 percent of the position, route cards with prerequisites, and an exit window showing the next US session.
 
 ## Before posting
 

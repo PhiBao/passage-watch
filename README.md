@@ -34,6 +34,7 @@ Everything is real: the identity graph, prices, the Solana multiplier, the sell 
 | Exit window | Market open/closed now, next session, sessions remaining before your deadline |
 | Monitoring | Background snapshot worker + "change since saved" |
 | Address import | Paste a Solana address (read-only) to pull supported holdings |
+| Trading-desk skin | Dark terminal UI: live UTC clock, NYSE badge, scrolling catalog price tape, quote board, depth-bar liquidity ladder |
 
 ---
 
