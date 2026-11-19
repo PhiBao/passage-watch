@@ -323,6 +323,7 @@ async fn check(
         "instrument": instrument,
         "destination": q.destination,
         "quantity": q.quantity,
+        "deadline": q.deadline,
         "observed_value_usd": observed,
         "quote": quote,
         "routes": routes,

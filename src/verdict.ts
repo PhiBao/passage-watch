@@ -3,6 +3,7 @@ import type { CheckResult } from './types'
 export function verdict(result: CheckResult | null): string | null {
   if (!result) return null
   const { quote, routes, destination } = result
+  const deadline = result.deadline ?? ''
   if (!quote) {
     return `Enter a quantity and check routes to see the sell-side quote and route statuses.`
   }
@@ -30,7 +31,19 @@ export function verdict(result: CheckResult | null): string | null {
       add += ` Jupiter quotes ${bps >= 0 ? '+' : ''}${bps.toFixed(0)} bps ${bps >= 0 ? 'above' : 'below'} the CMC observed notional.`
     }
   }
+  add += deadlineHintSentence(deadline)
   return base + add
+}
+
+function deadlineHintSentence(deadline: string): string {
+  if (!deadline) return ''
+  const d = new Date(deadline)
+  if (isNaN(d.getTime())) return ''
+  const daysUntil = (d.getTime() - Date.now()) / 86400000
+  if (daysUntil > 7) return ` Your deadline is ${Math.round(daysUntil)} days out — enough for a plan, not yet for issuer-route timing.`
+  if (daysUntil > 0) return ` Your deadline is ${Math.round(daysUntil * 24)} hours out.`
+  if (daysUntil > -1) return ` Your deadline was yesterday — re-check the exit window now.`
+  return ' Your deadline has passed. Re-plan before acting.'
 }
 
 export function deadlineHint(iso: string | undefined): string | null {

@@ -55,6 +55,7 @@ export interface CheckResult {
   instrument: Instrument
   destination: Destination
   quantity: number
+  deadline: string
   observed_value_usd: number | null
   quote: SellQuote | null
   routes: RouteResult[]
