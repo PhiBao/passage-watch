@@ -23,7 +23,8 @@ RUN mkdir -p src \
     && echo 'fn main() {}' > src/main.rs \
     && cargo build --release
 COPY src ./src
-RUN cargo build --release
+# Touch sources so cargo never reuses the placeholder build above.
+RUN find src -type f -exec touch {} + && cargo build --release
 
 # ---------- runtime ----------
 FROM debian:bookworm-slim AS runtime
