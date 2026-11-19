@@ -165,8 +165,9 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
-      <Header />
+    <>
+      <Header instruments={instruments} marketOpen={timeline?.market_open_now ?? null} />
+      <div className="app-shell">
       <main>
         <section className="hero">
           <p className="eyebrow">Outcome planner for tokenized holdings</p>
@@ -283,6 +284,7 @@ export default function App() {
                 <div className="size-grid">
                   {result.size_quotes.map((s) => (
                     <div className="size-cell" key={s.fraction}>
+                      <div className="size-bar" style={{ width: `${s.fraction * 100}%` }} aria-hidden="true" />
                       <div className="size-head">
                         <span className="size-fraction">{Math.round(s.fraction * 100)}%</span>
                         <span className="size-qty">{s.quantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} units</span>
@@ -342,6 +344,7 @@ export default function App() {
         <span>Passage Watch · data by CoinMarketCap · read-only prototype</span>
         <span>Not financial, legal or tax advice.</span>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }

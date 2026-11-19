@@ -38,7 +38,7 @@ export default function Sparkline({ points, width = 720, height = 120 }: {
       role="img"
       aria-label={`Price trend over ${points.length} observations`}
     >
-      <polygon points={area} fill="rgba(23,107,91,0.08)" />
+      <polygon points={area} fill="rgba(60,224,129,0.09)" />
       <polyline
         points={line}
         fill="none"
