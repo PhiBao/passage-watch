@@ -55,8 +55,9 @@ async fn main() {
         monitor: monitor.clone(),
     };
 
-    // Background exit-readiness monitor (read-only).
-    {
+    // Optional background monitor. Off by default: the on-check snapshot below
+    // gives real change history without burning CMC credits in the background.
+    if std::env::var("ENABLE_MONITOR").ok().as_deref() == Some("1") {
         let state = state.clone();
         tokio::spawn(passage_watch::monitor::monitor_worker(
             state.cmc.clone(),
@@ -324,6 +325,18 @@ async fn check(
     };
 
     let routes: Vec<RouteResult> = engine::evaluate(&ctx, today);
+
+    // Record a real observation on every check. This is what "change since
+    // saved" diffs against — no background polling, no extra upstream calls.
+    s.monitor.push(
+        &instrument.token_symbol,
+        passage_watch::monitor::Snapshot {
+            at_iso: now.iso.clone(),
+            price_usd: instrument.observed_price_usd,
+            usdc_at_monitor_size: quote.as_ref().and_then(|x| x.usdc_amount),
+            quote_error: quote.as_ref().and_then(|x| x.error.clone()),
+        },
+    );
 
     Ok(Json(json!({
         "instrument": instrument,

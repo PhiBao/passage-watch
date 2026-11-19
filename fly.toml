@@ -1,8 +1,8 @@
 # fly.toml — Passage Watch
+#
 # Scale-to-zero: the machine stops when idle and starts on the next request.
-# Fly's proxy holds the request while the machine boots, so the browser gets the
-# page instead of a 5xx. Cold starts are a few seconds; index.html shows a
-# loading state while that happens.
+# Fly's proxy holds the request while the machine boots, so the browser gets
+# the page instead of a 5xx. index.html shows a loading state meanwhile.
 app = "passage-watch"
 primary_region = "sin"
 
@@ -25,13 +25,13 @@ primary_region = "sin"
     soft_limit = 20
     hard_limit = 30
 
-[[vm]]
-  size = "shared-cpu-1x"
-  memory = "512mb"
-
-[[healthchecks]]
+[[http_service.checks]]
   method = "GET"
   path = "/health"
   interval = "15s"
   timeout = "5s"
   grace_period = "10s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
