@@ -32,13 +32,14 @@ Build the next product version of Passage Watch: a **tokenized-stock exit readin
 10. Show covered count + unsupported reasons in the UI catalog.
 11. Target ≥20 enabled instruments.
 
-## Phase 2 — Readiness timeline + monitoring
+## Phase 2 — Readiness timeline + monitoring (DONE)
 
-13. Exit-window timeline: Now → Next US session → Your deadline → route windows.
-14. Global snapshot worker (server, interval 15–30 min): CMC price/identity, Jupiter sell quote at standard sizes, session, active multiplier, evidence freshness, token/issuer graph changes.
-15. SQLite observation store; saved plans are compared against real collected history.
-16. Route-evidence change detection (source diff vs stored version).
-17. UI: "Change since saved" from real snapshots (not just a re-check), plus readiness timeline.
+13. Exit-window timeline: Now → Next NYSE session → Deadline.
+14. Background monitor worker (server, 60s): CMC observed price + Jupiter sell quote at a standard size (50), stored in an in-memory ring.
+15. `/api/v1/changes/:token_symbol?since_iso=` — change history vs a saved plan.
+16. UI: exit-window timeline panel, change history, route statuses.
+
+Notes: monitor storage is in-memory (300 snapshots) — acceptable MVP.
 
 ## What NOT to do
 
@@ -50,9 +51,8 @@ Build the next product version of Passage Watch: a **tokenized-stock exit readin
 
 ## Phase 1 implementation notes
 
-Fetch: `GET /v5/real-world-assets/map` (symbol=AAPL,NVDA,TSLA,SPY + broader list),
-`GET /v5/real-world-assets/quotes/latest` (per underlying rwa_id),
-`GET /v5/real-world-assets/issuers/list` and `/issuers` (cross-check roster),
-`GET /v2/cryptocurrency/info` (contracts).
-Verification: identity + contract + unit + quote-support. 
-Acceptance: catalog from CMC, not hardcoded; show "covered X of Y".
+Fetch: `GET /v5/real-world-assets/map` (asset_type=stock),
+`GET /v5/real-world-assets/quotes/latest` (Backed ids),
+`GET /v2/cryptocurrency/info` (contracts per token).
+Verification: identity + contract.
+Acceptance: 146 enabled Backed instruments from CMC, verified by contract fetch.

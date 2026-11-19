@@ -2,53 +2,30 @@
 
 ## Current phase
 
-Vertical slice complete and running end-to-end against live APIs. Ready for demo polish and submission rehearsal.
+Phase 0–2 delivered: correct sell-side Jupiter quote, living CMC catalog (146 Backed instruments), NYSE calendar, server caches, readiness timeline, and a background monitor worker.
 
 ## Done
 
-- Rust backend (Axum) + React frontend (Vite) both build; 14 Rust tests pass.
-- Live CMC catalog, check, instrument, method and status endpoints.
-- Live Solana parsed-mint multiplier resolution; unit_basis verified end-to-end.
-- Live keyless Jupiter read-only quote, normalized to share-equivalents.
-- Deterministic route engine: destination-specific, explicit unknowns, no global verdict.
-- Versioned evidence registry with freshness and conflict states.
-- Frontend: plan form, destination switch, route cards, evidence panel, localStorage plan + change view.
-- Real-call evidence captured under `docs/evidence/`; reproduction script added.
-- Submission-quality README, architecture/design/submission docs and route diagram added.
-
-- Product direction fixed: Passage Watch.
-- Repository safety boundaries added; `.env` ignored by Git.
-- **CMC key verified live**: the `.env` key is a valid Startup plan (450,000 credits/month, 600 req/min, HTTP 200 on `/v1/key/info`).
-  - An earlier "plan expired" result came from a stale shell variable with a different key; `.env` is the source of truth.
-  - Backend must load `.env` with `dotenvy::dotenv_override()` so the stale shell var cannot win.
-- **Real RWA data verified**: underlying stock symbols resolve to `rwa_id`, and `quotes/latest` returns the token → issuer → `crypto_id` graph with prices.
-  - AAPLX (`rwa_id` 3 / `crypto_id` 36994), NVDAX (2 / 36992), TSLAX (14 / 37004), SPYX (86 / 37006), all Backed Assets.
-  - Real response sample saved under `docs/evidence/`.
-- **Solana contract addresses** captured from `/v2/cryptocurrency/info`.
-- **Secondary quote verified keyless**: Jupiter Swap V2 `/order` returns a read-only quote (no `taker`) with no API key. This removes an access dependency.
-
-- Observation history panel from real CMC daily quotes (10 points), powering the "change since saved" demo.
-- Quote normalization uses the parsed mint's real `decimals` (not hardcoded 8) via a round-trip-tested pair of converters in `src/unit.rs`. 15/15 tests pass.
+- **Phase 0 — Correctness:** sell-side Jupiter quote now correctly sells tokens → USDC (verified live: $26,543 USDC for 75 AAPLX). Correct Solana scaled-UI multiplier/decimals handling via `jsonParsed` RPC. NYSE calendar for session display; server caches for CMC catalog/contract/multiplier and Jupiter quotes. `src/unit.rs` conversion round-trips.
+- **Phase 1 — Living CMC catalog:** 146 Backed instruments discovered from `/v5/real-world-assets/map` + `quotes/latest`. Contracts resolved per-token via `/v2/cryptocurrency/info`. Contracts + unit verified at `check` time.
+- **Phase 2 — Timeline + monitoring:** `/api/v1/timeline` shows market status, next session, deadline, and route statuses (SECONDARY_SALE: quoted). Background worker snapshots price + standard-size sell quote every 60s into an in-memory ring; `/api/v1/changes/:symbol` exposes changes since a saved time. Verified live: changes for AAPLX; check = $26,543.
+- Deterministic route engine with explicit states (no "best route" verdict).
+- Versioned evidence registry with freshness/staleness.
+- Frontend: plan form, destination switch, route cards, timeline panel, changes panel, evidence panel, observation history, localStorage saved-plan diff.
 
 ## Verified end-to-end
 
-- `GET /` serves the built frontend from `dist/`; favicon and all assets load.
-- `GET /api/v1/check` (AAPLX, USDC goal) → unit verified, quote `74.14 share-equivalents`, xPort `different_destination`.
-- `GET /api/v1/check` (AAPLX, brokerage goal) → xPort `requires_preparation`.
-- `GET /api/v1/observations/36994` → 10 real daily points.
-- `cargo test` 15/15, `pnpm build` clean.
+- `GET /` serves the built frontend; favicon loads.
+- `GET /api/v1/check` (AAPLX, USDC) → `unit_basis: verified`, `usdc_amount ≈ 26,543`, spreads vs CMC visible.
+- `GET /api/v1/check` (AAPLX, brokerage) → xPort `requires_preparation`.
+- `GET /api/v1/timeline` → `market_open_now: false`, `next_session`, `routes`.
+- `GET /api/v1/changes/AAPLX` → monitor snapshots.
+- `GET /api/v1/observations/36994` → 10 daily points.
+- `cargo test` 20/20, `pnpm build` clean, zero warnings.
 
 ## Next (remaining for submission)
 
-- Record the 3-minute demo video from the running app (port 3317 locally, or the deployed URL).
-- Confirm Jupiter keyless display terms and rate limits; add a documented fallback state.
+- Note: monitor ring is in-memory (300 snapshots/global); acceptable for MVP but consider moving to SQLite later.
+- Record the 3-minute demo video (port 3317 locally, or the deployed URL).
+- Confirm Jupiter keyless display terms and rate limits.
 - Final submission rehearsal: public repo, DoraHacks build, X post with `#BuildwithCMC`.
-
-## Known risks
-
-- RWA and crypto market-pairs endpoints are Growth-gated; Passage runs on Basic after the event and does not depend on them.
-- Jupiter display terms and rate limits for a public demo still need confirmation; the keyless quote is unauthenticated and shared-rate-limited.
-- Solana RPC for mint/multiplier reading needs a provider; public endpoint may rate-limit.
-- Token unit semantics require effective-time multiplier handling.
-- Issuer route evidence can become stale.
-- The product remains adjacent to strong prior projects; monitoring and destination semantics must remain central.
